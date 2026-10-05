@@ -1339,7 +1339,7 @@ function App() {
       >
         {screen === 'home' && (
           <>
-            <h1>数字人狼</h1>
+            <h1>Ni狼lamo</h1>
 
             <p className="subtitle">数字で答えて、人狼を見つけろ。</p>
 
