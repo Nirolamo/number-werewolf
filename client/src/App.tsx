@@ -1340,7 +1340,7 @@ function App() {
           <>
             <h1>Ni狼lamo</h1>
 
-            <p className="subtitle">数字で答えて、人狼を見つけろ。</p>
+            <p className="subtitle">人狼を見つけろ</p>
 
             <div className="menu">
               <button
