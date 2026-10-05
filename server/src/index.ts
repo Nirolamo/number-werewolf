@@ -51,18 +51,28 @@ type Player = {
   isConnected: boolean
 }
 
-type Topic = {
-  id: string
-  text: string
-  min: number
-  max: number
-}
+type TopicType = 'NUMBER' | 'PLAYER'
+
+type Topic =
+  | {
+      id: string
+      text: string
+      type: 'NUMBER'
+      min: number
+      max: number
+    }
+  | {
+      id: string
+      text: string
+      type: 'PLAYER'
+    }
 
 type CustomTopic = Topic & {
   createdBy: string
 }
 
 type TopicSource = 'PRESET' | 'CUSTOM' | 'BOTH'
+type TopicTypeFilter = 'NUMBER' | 'PLAYER' | 'BOTH'
 
 type CustomTopicView = Topic & {
   isOwn: boolean
@@ -78,6 +88,10 @@ type Answer =
       value: null
     }
   | {
+      type: 'PLAYER'
+      value: string
+    }
+  | {
       type: 'TIMEOUT'
       value: null
     }
@@ -90,6 +104,10 @@ type AnswerDraft =
   | {
       type: 'OVER_MAX'
       value: null
+    }
+  | {
+      type: 'PLAYER'
+      value: string
     }
 
 type VoteCount = {
@@ -149,6 +167,7 @@ type Room = {
 
   customTopics: CustomTopic[]
   topicSource: TopicSource
+  topicTypeFilter: TopicTypeFilter
   showCustomTopics: boolean
 }
 
@@ -167,602 +186,903 @@ const PRESET_TOPICS: Topic[] = [
   {
     id: 'preset-1',
     text: '理想の睡眠時間は？',
+    type: 'NUMBER',
     min: 0,
     max: 15,
   },
   {
     id: 'preset-2',
     text: '旅行に行くなら何日間くらいが理想？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-3',
     text: '自分の料理の腕前を100点満点で評価すると？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-4',
     text: '初デートに使ってもいいと思う金額は？',
+    type: 'NUMBER',
     min: 0,
     max: 10000,
   },
   {
     id: 'preset-5',
     text: 'このメンバーで無人島生活したら何日耐えられそう？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-6',
     text: '自分の運の良さを100点満点で評価すると？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-7',
     text: '自分のコミュニケーション能力は何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-8',
     text: '自分の方向感覚は何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-9',
     text: '自分のファッションセンスは何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-10',
     text: '自分の体力は何点くらい？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-11',
     text: '自分は朝に強い方だと思う？何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-12',
     text: '今の生活の充実度は何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-13',
     text: '今の自分の部屋の綺麗さは何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-14',
     text: '自分は嘘をつくのが上手いと思う？何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-15',
     text: 'このメンバーへの信頼度は何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-16',
     text: 'このメンバーで旅行したら楽しそう度は何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-17',
     text: '自分が人狼ゲームで生き残れる自信は何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-18',
     text: '自分の記憶力は何点くらい？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-19',
     text: '自分の計画性は何点くらい？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-20',
     text: '自分のメンタルの強さは何点くらい？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-21',
     text: '今まで何か国行ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 50,
   },
   {
     id: 'preset-22',
     text: '今まで何都道府県行ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 50,
   },
   {
     id: 'preset-23',
     text: '今まで何回海外旅行したことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-24',
     text: '今まで何回引っ越したことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-25',
     text: '今まで何個アルバイトを経験したことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-26',
     text: '今まで何種類のスポーツをやったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-27',
     text: '今まで何個習い事をしたことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-28',
     text: '今まで何種類の楽器を演奏したことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-29',
     text: '今まで何個の部活・サークルに入ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-30',
     text: '今まで何個資格を取ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-31',
     text: '今まで何回一人旅したことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-32',
     text: '今まで何回キャンプしたことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 50,
   },
   {
     id: 'preset-33',
     text: '今まで何回ライブ・コンサートに行ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-34',
     text: '今まで何回スポーツ観戦に行ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-35',
     text: '今まで何回テーマパークに行ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-36',
     text: '今まで何回飛行機に乗ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-37',
     text: '今まで何回新幹線に乗ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-38',
     text: '今まで何校に通ったことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-39',
     text: '今まで何回面接を受けたことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-40',
     text: '今まで何回徹夜したことがある？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
   },
   {
     id: 'preset-41',
     text: '休日なら何時間くらい寝ていられる？',
+    type: 'NUMBER',
     min: 0,
     max: 24,
   },
   {
     id: 'preset-42',
     text: '1日にスマホを何時間くらい使う？',
+    type: 'NUMBER',
     min: 0,
     max: 24,
   },
   {
     id: 'preset-43',
     text: 'ゲームをぶっ通しで何時間できる？',
+    type: 'NUMBER',
     min: 0,
     max: 24,
   },
   {
     id: 'preset-44',
     text: '映画やドラマを一気見するなら何時間までいける？',
+    type: 'NUMBER',
     min: 0,
     max: 24,
   },
   {
     id: 'preset-45',
     text: '何時間までなら長距離移動に耐えられる？',
+    type: 'NUMBER',
     min: 0,
     max: 24,
   },
   {
     id: 'preset-46',
     text: '友達の遅刻を何分まで許せる？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-47',
     text: '飲食店なら何分まで並べる？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-48',
     text: '電車の遅延は何分までなら気にならない？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-49',
     text: '待ち合わせには何分前に着きたい？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-50',
     text: '朝起きてから家を出るまで何分必要？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-51',
     text: '昼寝するなら何分くらいが理想？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-52',
     text: 'お風呂には何分くらい入る？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-53',
     text: '家から最寄り駅まで何分くらい？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-54',
     text: '通勤・通学は片道何分までなら許容できる？',
+    type: 'NUMBER',
     min: 0,
     max: 120,
   },
   {
     id: 'preset-55',
     text: 'カラオケは何時間くらいがちょうどいい？',
+    type: 'NUMBER',
     min: 0,
     max: 15,
   },
   {
     id: 'preset-56',
     text: 'コンビニで一度に使う金額はいくらくらい？',
+    type: 'NUMBER',
     min: 0,
     max: 5000,
   },
   {
     id: 'preset-57',
     text: 'ランチならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 5000,
   },
   {
     id: 'preset-58',
     text: 'ラーメン一杯ならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 5000,
   },
   {
     id: 'preset-59',
     text: 'カフェ1回ならいくらまで使える？',
+    type: 'NUMBER',
     min: 0,
     max: 5000,
   },
   {
     id: 'preset-60',
     text: '映画館で食べ物・飲み物にいくらまで使う？',
+    type: 'NUMBER',
     min: 0,
     max: 5000,
   },
   {
     id: 'preset-61',
     text: '友達への誕生日プレゼントならいくらくらい？',
+    type: 'NUMBER',
     min: 0,
     max: 10000,
   },
   {
     id: 'preset-62',
     text: '一回の飲み会ならいくらまで使える？',
+    type: 'NUMBER',
     min: 0,
     max: 10000,
   },
   {
     id: 'preset-63',
     text: '初対面の人との食事ならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 10000,
   },
   {
     id: 'preset-64',
     text: 'タクシーなら一回いくらまで使える？',
+    type: 'NUMBER',
     min: 0,
     max: 10000,
   },
   {
     id: 'preset-65',
     text: '趣味のものを衝動買いするならいくらまで？',
+    type: 'NUMBER',
     min: 0,
     max: 10000,
   },
   {
     id: 'preset-66',
     text: '普段使いの靴ならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 30000,
   },
   {
     id: 'preset-67',
     text: '普段使いのバッグならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 30000,
   },
   {
     id: 'preset-68',
     text: 'イヤホン・ヘッドホンならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 30000,
   },
   {
     id: 'preset-69',
     text: '一泊のホテルならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 30000,
   },
   {
     id: 'preset-70',
     text: '財布ならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 100000,
   },
   {
     id: 'preset-71',
     text: '国内旅行1泊にいくらまで使える？',
+    type: 'NUMBER',
     min: 0,
     max: 100000,
   },
   {
     id: 'preset-72',
     text: 'スマホを買うならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 100000,
   },
   {
     id: 'preset-73',
     text: '趣味のためなら一度にいくらまで使える？',
+    type: 'NUMBER',
     min: 0,
     max: 100000,
   },
   {
     id: 'preset-74',
     text: '記念日の食事ならいくらまで出せる？',
+    type: 'NUMBER',
     min: 0,
     max: 100000,
   },
   {
     id: 'preset-75',
     text: '自分へのご褒美ならいくらまで使える？',
+    type: 'NUMBER',
     min: 0,
     max: 100000,
   },
   {
     id: 'preset-76',
     text: '一度に食べられる寿司は何皿くらい？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-77',
     text: '焼肉で肉は何皿くらい食べられる？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-78',
     text: '餃子なら一度に何個くらい食べられる？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-79',
     text: '一日にコーヒーを何杯まで飲める？',
+    type: 'NUMBER',
     min: 0,
     max: 15,
   },
   {
     id: 'preset-80',
     text: '一日に水やお茶を何杯くらい飲む？',
+    type: 'NUMBER',
     min: 0,
     max: 15,
   },
   {
     id: 'preset-81',
     text: '一週間に外食は何回くらいする？',
+    type: 'NUMBER',
     min: 0,
     max: 15,
   },
   {
     id: 'preset-82',
     text: '一週間にコンビニへ何回くらい行く？',
+    type: 'NUMBER',
     min: 0,
     max: 15,
   },
   {
     id: 'preset-83',
     text: '一週間に何回くらい運動したい？',
+    type: 'NUMBER',
     min: 0,
     max: 15,
   },
   {
     id: 'preset-84',
     text: '一か月に映画を何本くらい観る？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-85',
     text: '一か月に本や漫画を何冊くらい読む？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-86',
     text: '一か月に何回くらい飲みに行く？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-87',
     text: '旅行に持っていく靴は何足？',
+    type: 'NUMBER',
     min: 0,
     max: 10,
   },
   {
     id: 'preset-88',
     text: '旅行に持っていくバッグは何個？',
+    type: 'NUMBER',
     min: 0,
     max: 10,
   },
   {
     id: 'preset-89',
     text: '無人島に持っていけるなら何個持っていきたい？',
+    type: 'NUMBER',
     min: 0,
     max: 10,
   },
   {
     id: 'preset-90',
     text: 'スマホに入れておきたい必須アプリは何個くらい？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-91',
     text: '何日くらいならスマホなしで生活できる？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-92',
     text: '何日くらいなら一人旅できる？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-93',
     text: '同じ料理を連続で何日食べられる？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-94',
     text: '何日くらいならSNSを見なくても平気？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-95',
     text: '何日くらいなら家から出なくても平気？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-96',
     text: 'このメンバーだけで旅行するなら何泊したい？',
+    type: 'NUMBER',
     min: 0,
     max: 15,
   },
   {
     id: 'preset-97',
     text: 'このメンバーで共同生活するなら何日続けられそう？',
+    type: 'NUMBER',
     min: 0,
     max: 30,
   },
   {
     id: 'preset-98',
     text: 'このメンバーで会社を作ったら何年続きそう？',
+    type: 'NUMBER',
     min: 0,
     max: 20,
   },
   {
     id: 'preset-99',
     text: 'このメンバーの中で、自分の人狼の上手さを10点満点で評価すると？',
+    type: 'NUMBER',
     min: 0,
     max: 10,
   },
   {
     id: 'preset-100',
     text: '今日の自分のテンションは100点満点で何点？',
+    type: 'NUMBER',
     min: 0,
     max: 100,
+  },
+
+  {
+    id: 'preset-101',
+    text: 'この中で一番料理がうまい人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-102',
+    text: 'この中で一番旅行の計画を任せたい人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-103',
+    text: 'この中で一番朝に強そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-104',
+    text: 'この中で一番無人島で生き残りそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-105',
+    text: 'この中で一番方向感覚が良さそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-106',
+    text: 'この中で一番秘密を守ってくれそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-107',
+    text: 'この中で一番遅刻しそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-108',
+    text: 'この中で一番お金を稼ぎそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-109',
+    text: 'この中で一番人狼ゲームが上手そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-110',
+    text: 'この中で一番嘘が上手そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-111',
+    text: 'この中で一番海外で暮らせそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-112',
+    text: 'この中で一番店を開いたら繁盛させそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-113',
+    text: 'この中で一番有名人になりそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-114',
+    text: 'この中で一番遭難しても冷静そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-115',
+    text: 'この中で一番相談したい人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-116',
+    text: 'この中で一番SNSを使いこなしそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-117',
+    text: 'この中で一番宝くじが当たったら散財しそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-118',
+    text: 'この中で急に旅行へ誘っても一番来てくれそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-119',
+    text: 'この中で一番このゲームで疑われやすそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-120',
+    text: 'この中で一番リーダーを任せたい人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-121',
+    text: 'この中で一番嘘を見抜くのが上手そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-122',
+    text: 'この中で一番初対面の人とすぐ仲良くなれそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-123',
+    text: 'この中で一番店選びのセンスが良さそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-124',
+    text: 'この中で一番プレゼント選びが上手そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-125',
+    text: 'この中で一番ファッションセンスが良さそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-126',
+    text: 'この中で一番写真を撮るのが上手そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-127',
+    text: 'この中で一番カラオケが上手そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-128',
+    text: 'この中で一番スポーツが得意そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-129',
+    text: 'この中で一番ゲームが上手そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-130',
+    text: 'この中で一番頭の回転が速そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-131',
+    text: 'この中で一番クイズが強そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-132',
+    text: 'この中で一番記憶力が良さそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-133',
+    text: 'この中で一番計画性がありそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-134',
+    text: 'この中で一番時間に正確そうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-135',
+    text: 'この中で一番忘れ物が少なそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-136',
+    text: 'この中で一番大金を手にしても生活が変わらなそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-137',
+    text: 'この中で一番一人旅を楽しめそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-138',
+    text: 'この中で一番キャンプで頼りになりそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-139',
+    text: 'この中で一番ゾンビの世界で生き残りそうな人は？',
+    type: 'PLAYER',
+  },
+  {
+    id: 'preset-140',
+    text: 'この中で一番最後まで人狼だとバレなさそうな人は？',
+    type: 'PLAYER',
   },
 ]
 
@@ -840,13 +1160,14 @@ function getCustomTopicsForPlayer(room: Room, playerId: string) {
     ? room.customTopics
     : room.customTopics.filter((topic) => topic.createdBy === playerId)
 
-  const customTopics: CustomTopicView[] = visibleTopics.map((topic) => ({
-    id: topic.id,
-    text: topic.text,
-    min: topic.min,
-    max: topic.max,
-    isOwn: topic.createdBy === playerId,
-  }))
+  const customTopics: CustomTopicView[] = visibleTopics.map((topic) => {
+    const { createdBy: _createdBy, ...topicData } = topic
+
+    return {
+      ...topicData,
+      isOwn: topic.createdBy === playerId,
+    }
+  })
 
   return {
     customTopics,
@@ -958,8 +1279,9 @@ function finishAnswering(room: Room) {
 
   io.to(room.code).emit('answerReveal', {
     topic: room.topic.text,
-    min: room.topic.min,
-    max: room.topic.max,
+    topicType: room.topic.type,
+    min: room.topic.type === 'NUMBER' ? room.topic.min : null,
+    max: room.topic.type === 'NUMBER' ? room.topic.max : null,
     answers: revealedAnswers,
     discussionEndsAt: room.discussionEndsAt ?? null,
     skipCount: 0,
@@ -1251,6 +1573,7 @@ io.on('connection', (socket) => {
 
       customTopics: [],
       topicSource: 'PRESET',
+      topicTypeFilter: 'BOTH',
       showCustomTopics: false,
     }
 
@@ -1264,6 +1587,7 @@ io.on('connection', (socket) => {
       players: room.players,
       discussionSeconds: room.discussionSeconds,
       topicSource: room.topicSource,
+      topicTypeFilter: room.topicTypeFilter,
       showCustomTopics: room.showCustomTopics,
       ...getCustomTopicsForPlayer(room, socket.id),
     })
@@ -1366,6 +1690,7 @@ io.on('connection', (socket) => {
       players: room.players,
       discussionSeconds: room.discussionSeconds,
       topicSource: room.topicSource,
+      topicTypeFilter: room.topicTypeFilter,
       showCustomTopics: room.showCustomTopics,
       ...getCustomTopicsForPlayer(room, socket.id),
     })
@@ -1719,6 +2044,7 @@ io.on('connection', (socket) => {
 
       discussionSeconds: room.discussionSeconds,
       topicSource: room.topicSource,
+      topicTypeFilter: room.topicTypeFilter,
       showCustomTopics: room.showCustomTopics,
 
       ...getCustomTopicsForPlayer(room, newSocketId),
@@ -1728,9 +2054,14 @@ io.on('connection', (socket) => {
             role: isWerewolf ? 'WEREWOLF' : 'CITIZEN',
 
             topic: isWerewolf ? null : room.topic.text,
+            topicType: room.topic.type,
 
-            min: room.topic.min,
-            max: room.topic.max,
+            min: room.topic.type === 'NUMBER' ? room.topic.min : null,
+            max: room.topic.type === 'NUMBER' ? room.topic.max : null,
+            answerOptions:
+              room.topic.type === 'PLAYER'
+                ? room.players.map((roomPlayer) => roomPlayer.name)
+                : [],
 
             answerEndsAt: room.answerEndsAt ?? null,
 
@@ -1745,8 +2076,9 @@ io.on('connection', (socket) => {
       ...(room.phase === 'DISCUSSION' && room.topic
         ? {
             topic: room.topic.text,
-            min: room.topic.min,
-            max: room.topic.max,
+            topicType: room.topic.type,
+            min: room.topic.type === 'NUMBER' ? room.topic.min : null,
+            max: room.topic.type === 'NUMBER' ? room.topic.max : null,
 
             answers: room.players.map((player) => ({
               playerId: player.id,
@@ -1878,6 +2210,21 @@ io.on('connection', (socket) => {
       room.topicSource = data.topicSource
     }
 
+    // 出題タイプ
+    if (data.topicTypeFilter !== undefined) {
+      const allowedTopicTypes: TopicTypeFilter[] = ['NUMBER', 'PLAYER', 'BOTH']
+
+      if (!allowedTopicTypes.includes(data.topicTypeFilter)) {
+        callback({
+          ok: false,
+          message: '無効な出題タイプです',
+        })
+        return
+      }
+
+      room.topicTypeFilter = data.topicTypeFilter
+    }
+
     // カスタムお題の公開・非公開
     if (data.showCustomTopics !== undefined) {
       if (typeof data.showCustomTopics !== 'boolean') {
@@ -1894,6 +2241,7 @@ io.on('connection', (socket) => {
     io.to(room.code).emit('settingsUpdated', {
       discussionSeconds: room.discussionSeconds,
       topicSource: room.topicSource,
+      topicTypeFilter: room.topicTypeFilter,
       showCustomTopics: room.showCustomTopics,
     })
 
@@ -2051,10 +2399,7 @@ io.on('connection', (socket) => {
     }
 
     const text = data.text?.trim()
-
-    const min = Number(data.min)
-
-    const max = Number(data.max)
+    const topicType = data.topicType as TopicType
 
     if (!text) {
       callback({
@@ -2064,29 +2409,51 @@ io.on('connection', (socket) => {
       return
     }
 
-    if (!Number.isFinite(min) || !Number.isFinite(max)) {
+    if (topicType !== 'NUMBER' && topicType !== 'PLAYER') {
       callback({
         ok: false,
-        message: '最小値と最大値を数字で入力してください',
+        message: 'お題タイプが無効です',
       })
       return
     }
 
-    if (min >= max) {
-      callback({
-        ok: false,
-        message: '最大値は最小値より大きくしてください',
-      })
-      return
-    }
+    let topic: CustomTopic
 
-    const topic: CustomTopic = {
-      id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    if (topicType === 'PLAYER') {
+      topic = {
+        id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        text,
+        type: 'PLAYER',
+        createdBy: socket.id,
+      }
+    } else {
+      const min = Number(data.min)
+      const max = Number(data.max)
 
-      text,
-      min,
-      max,
-      createdBy: socket.id,
+      if (!Number.isFinite(min) || !Number.isFinite(max)) {
+        callback({
+          ok: false,
+          message: '最小値と最大値を数字で入力してください',
+        })
+        return
+      }
+
+      if (min >= max) {
+        callback({
+          ok: false,
+          message: '最大値は最小値より大きくしてください',
+        })
+        return
+      }
+
+      topic = {
+        id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        text,
+        type: 'NUMBER',
+        min,
+        max,
+        createdBy: socket.id,
+      }
     }
 
     room.customTopics.push(topic)
@@ -2237,10 +2604,19 @@ io.on('connection', (socket) => {
       availableTopics = [...PRESET_TOPICS, ...room.customTopics]
     }
 
+    if (room.topicTypeFilter !== 'BOTH') {
+      availableTopics = availableTopics.filter(
+        (topic) => topic.type === room.topicTypeFilter,
+      )
+    }
+
     if (availableTopics.length === 0) {
       callback({
         ok: false,
-        message: 'カスタムお題が1件以上必要です',
+        message:
+          room.topicSource === 'CUSTOM'
+            ? '現在の出題タイプに一致するカスタムお題がありません'
+            : '現在の設定に一致するお題がありません',
       })
       return
     }
@@ -2276,9 +2652,14 @@ io.on('connection', (socket) => {
         role: isWerewolf ? 'WEREWOLF' : 'CITIZEN',
 
         topic: isWerewolf ? null : room.topic.text,
+        topicType: room.topic.type,
 
-        min: room.topic.min,
-        max: room.topic.max,
+        min: room.topic.type === 'NUMBER' ? room.topic.min : null,
+        max: room.topic.type === 'NUMBER' ? room.topic.max : null,
+        answerOptions:
+          room.topic.type === 'PLAYER'
+            ? room.players.map((roomPlayer) => roomPlayer.name)
+            : [],
         answerEndsAt: room.answerEndsAt ?? null,
       })
     }
@@ -2311,6 +2692,30 @@ io.on('connection', (socket) => {
 
     if (data.type === 'CLEAR') {
       delete room.answerDrafts[socket.id]
+      return
+    }
+
+    if (room.topic.type === 'PLAYER') {
+      if (data.type !== 'PLAYER') {
+        return
+      }
+
+      const selectedPlayerName = String(data.value ?? '').trim()
+
+      const targetExists = room.players.some(
+        (player) => player.name === selectedPlayerName,
+      )
+
+      if (!targetExists) {
+        delete room.answerDrafts[socket.id]
+        return
+      }
+
+      room.answerDrafts[socket.id] = {
+        type: 'PLAYER',
+        value: selectedPlayerName,
+      }
+
       return
     }
 
@@ -2384,7 +2789,34 @@ io.on('connection', (socket) => {
 
     let answer: Answer
 
-    if (data.type === 'OVER_MAX') {
+    if (room.topic.type === 'PLAYER') {
+      if (data.type !== 'PLAYER') {
+        callback({
+          ok: false,
+          message: 'プレイヤーを選択してください',
+        })
+        return
+      }
+
+      const selectedPlayerName = String(data.value ?? '').trim()
+
+      const targetExists = room.players.some(
+        (player) => player.name === selectedPlayerName,
+      )
+
+      if (!targetExists) {
+        callback({
+          ok: false,
+          message: '選択したプレイヤーが見つかりません',
+        })
+        return
+      }
+
+      answer = {
+        type: 'PLAYER',
+        value: selectedPlayerName,
+      }
+    } else if (data.type === 'OVER_MAX') {
       answer = {
         type: 'OVER_MAX',
         value: null,
