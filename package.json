@@ -1,0 +1,12 @@
+{
+  "name": "number-werewolf",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "render-build": "npm ci --include=dev --prefix client && npm run build --prefix client && npm ci --include=dev --prefix server && npm run build --prefix server",
+    "start": "npm start --prefix server"
+  }
+}

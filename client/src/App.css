@@ -1,0 +1,1052 @@
+/* =========================
+   全体
+========================= */
+:root {
+  /* 意味色 */
+  --color-normal: #222222;
+  --color-progress: #041945;
+  --color-warning: #c95502;
+  --color-important: #b91c1c;
+  --color-werewolf: #6b0f0f;
+  --color-citizen: #2563eb;
+
+  /* 無彩色・補助色 */
+  --color-background: #ffffff;
+  --color-surface: #f4f4f4;
+  --color-border: #dddddd;
+  --color-input-border: #cccccc;
+  --color-border-strong: #bbbbbb;
+  --color-muted: #666666;
+  --color-light-text: #999999;
+
+  /* 薄い背景色 */
+  --color-progress-soft: #eef2f8;
+  --color-warning-soft: #fff7ed;
+  --color-important-soft: #fff5f5;
+
+  /* 演出 */
+  --color-werewolf-shadow: rgba(107, 15, 15, 0.35);
+  --disabled-opacity: 0.4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  color: var(--color-normal);
+  background: var(--color-background);
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 40px;
+}
+
+.card-wide {
+  max-width: 1080px;
+}
+
+/* =========================
+   見出し・テキスト
+========================= */
+
+h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 36px;
+}
+
+h2 {
+  margin: 0 0 24px;
+  text-align: center;
+}
+
+h3 {
+  margin: 28px 0 12px;
+}
+
+.subtitle {
+  margin: 10px 0 32px;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.range-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.range-label-en {
+  color: var(--color-light-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* =========================
+   フォーム共通
+========================= */
+
+.menu,
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  color: var(--color-normal);
+  background: var(--color-background);
+  border: 1px solid var(--color-input-border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+button {
+  width: 100%;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-progress);
+  color: var(--color-background);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+button.secondary {
+  background: var(--color-background);
+  color: var(--color-normal);
+  border: 1px solid var(--color-border-strong);
+}
+
+button.back {
+  background: transparent;
+  color: var(--color-muted);
+}
+
+.start-button {
+  margin-top: 24px;
+  background: var(--color-progress);
+  color: var(--color-background);
+}
+
+.start-game-button,
+.leave-button,
+.disband-button {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  margin-top: 12px;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+}
+
+.start-game-button {
+  margin-top: 24px;
+  background: var(--color-progress);
+  color: var(--color-background);
+  border: 1px solid var(--color-progress);
+}
+
+.start-game-button:hover {
+  background: var(--color-progress);
+}
+
+.leave-button {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning);
+}
+
+.disband-button {
+  background: var(--color-background);
+  color: var(--color-important);
+  border: 1px solid var(--color-important);
+}
+
+/* =========================
+   ロビー
+========================= */
+
+.room-code-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copy-room-code-button {
+  width: auto;
+  height: 26px;
+  padding: 4px 8px;
+  background: transparent;
+  color: var(--color-progress);
+  border: 1px solid var(--color-progress);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.copy-room-code-button:hover {
+  background: var(--color-progress-soft);
+  opacity: 1;
+}
+
+.room-code {
+  margin: 12px 0 28px;
+  padding: 16px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 6px;
+  background: var(--color-surface);
+  border-radius: 8px;
+}
+
+/* 参加プレイヤー */
+
+.player-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.player-name-area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.player-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.disconnected-label {
+  flex-shrink: 0;
+  color: var(--color-important);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.player-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.host-label {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--color-progress-soft);
+  color: var(--color-progress);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.kick-player-button {
+  width: auto;
+  padding: 4px 6px;
+  background: transparent;
+  color: var(--color-important);
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.kick-player-button:hover {
+  opacity: 0.7;
+}
+
+/* =========================
+   ゲーム設定
+========================= */
+
+.game-settings {
+  padding: 20px;
+  background: var(--color-surface);
+  border-radius: 10px;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 14px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.setting-row select {
+  width: 100%;
+  padding: 8px 10px;
+  color: var(--color-normal);
+  background: var(--color-background);
+  border: 1px solid var(--color-input-border);
+  border-radius: 6px;
+  font: inherit;
+}
+
+/* =========================
+   カスタムお題
+========================= */
+
+.custom-topic-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.custom-topic-section h3 {
+  margin-top: 0;
+}
+
+.custom-topic-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.custom-topic-range {
+  display: flex;
+  gap: 12px;
+}
+
+.custom-topic-range label {
+  flex: 1;
+}
+
+.custom-topic-count {
+  margin: 8px 0 20px;
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.custom-topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.custom-topic-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.custom-topic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.custom-topic-item span {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.custom-topic-delete {
+  width: auto;
+  flex-shrink: 0;
+  padding: 7px 10px;
+  background: var(--color-background);
+  color: var(--color-important);
+  border: 1px solid var(--color-important);
+  font-size: 13px;
+}
+
+.clear-custom-topics {
+  margin-bottom: 20px;
+  background: var(--color-background);
+  color: var(--color-important);
+  border: 1px solid var(--color-important);
+}
+
+/* =========================
+   役職・回答
+========================= */
+
+.role-screen {
+  text-align: center;
+}
+
+.role-screen h2 {
+  font-size: 28px;
+}
+
+.role-screen.citizen h2 {
+  color: var(--color-citizen);
+}
+
+.role-screen.werewolf h2 {
+  color: var(--color-werewolf);
+}
+
+.topic-box {
+  margin: 28px 0;
+  padding: 24px;
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+
+.topic-box strong {
+  font-size: 22px;
+}
+
+.role-screen.citizen .topic-box {
+  border: 2px solid var(--color-citizen);
+}
+
+.role-screen.werewolf .topic-box {
+  border: 2px solid var(--color-werewolf);
+}
+
+.range {
+  font-weight: bold;
+}
+
+.answer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.over-max-button {
+  border: 1px solid var(--color-border-strong);
+}
+
+.over-max-button.active {
+  background: var(--color-progress-soft);
+  color: var(--color-progress);
+  border: 1px solid var(--color-progress);
+  box-shadow: 0 0 0 1px var(--color-progress);
+}
+
+/* =========================
+   待機画面
+========================= */
+
+.waiting {
+  margin-top: 24px;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.waiting-screen {
+  text-align: center;
+}
+
+.answer-count {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--color-surface);
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* =========================
+   話し合い・回答公開
+========================= */
+
+.discussion-timer {
+  margin-bottom: 20px;
+  padding: 14px;
+  text-align: center;
+  background: var(--color-surface);
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.discussion-timer.warning {
+  color: var(--color-warning);
+}
+
+.discussion-timer.danger {
+  color: var(--color-important);
+}
+
+.revealed-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.revealed-answer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 56px;
+  height: auto;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.revealed-answer strong {
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+.skip-button {
+  margin-top: 24px;
+  background: var(--color-background);
+  color: var(--color-important);
+  border: 2px solid var(--color-important);
+}
+
+.skip-button.active {
+  background: var(--color-important);
+  color: var(--color-background);
+  border: 2px solid var(--color-important);
+}
+
+.revealed-answer > span {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* =========================
+   投票
+========================= */
+
+.vote-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-auto-rows: 56px;
+  gap: 10px;
+}
+
+.vote-option {
+  width: 100%;
+  height: 56px;
+  min-width: 0;
+  padding: 0 16px;
+  box-sizing: border-box;
+
+  background: var(--color-background);
+  color: var(--color-normal);
+  border: 1px solid var(--color-input-border);
+  box-shadow: none;
+}
+
+.vote-option.selected {
+  background: var(--color-important-soft);
+  color: var(--color-important);
+  border: 1px solid var(--color-important);
+
+  /* サイズを変えずに選択感だけ強くする */
+  box-shadow: inset 0 0 0 1px var(--color-important);
+}
+
+.vote-option:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+.skip-notice {
+  margin: 0 0 16px;
+  text-align: center;
+  color: var(--color-important);
+  font-size: 18px;
+  font-weight: 700;
+  animation: skip-notice-fade-in 0.6s ease-out both;
+}
+
+@keyframes skip-notice-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+.result-vote-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.vote-target-name {
+  color: var(--color-normal);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+/* =========================
+   投票結果演出
+========================= */
+
+.vote-result-screen {
+  min-height: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.vote-result-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+}
+
+.stage-announce {
+  animation: stage-announce-fade 4s ease-in-out both;
+}
+
+.stage-executed {
+  animation: stage-executed-fade 5s ease-in-out both;
+}
+
+.stage-role {
+  animation: stage-role-fade 10s ease-in-out both;
+}
+
+@keyframes stage-announce-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes stage-executed-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  16% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  84% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes stage-role-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.execution-announcement {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.executed-player-name {
+  font-size: 46px;
+  font-weight: 800;
+}
+
+.executed-votes {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.role-reveal-line {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.role-reveal-role {
+  display: inline-block;
+  font-family: 'Yu Mincho', 'Hiragino Mincho ProN', serif;
+  font-size: 58px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  animation: role-reveal-fade 3s ease-in-out 4s both;
+}
+
+.role-reveal-citizen {
+  color: var(--color-citizen);
+}
+
+.role-reveal-werewolf {
+  color: var(--color-werewolf);
+  text-shadow: 0 0 12px var(--color-werewolf-shadow);
+}
+
+@keyframes role-reveal-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================
+   結果画面
+========================= */
+
+.result-screen {
+  text-align: center;
+  animation: result-screen-fade 0.8s ease-out both;
+}
+@keyframes result-screen-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-screen.citizen h2 {
+  color: var(--color-citizen);
+}
+
+.result-screen.werewolf h2 {
+  color: var(--color-werewolf);
+}
+
+.result-box {
+  margin: 20px 0;
+  padding: 20px;
+  background: var(--color-surface);
+  border-radius: 10px;
+}
+
+.result-box p {
+  margin: 6px 0;
+}
+
+.result-box strong {
+  font-size: 24px;
+}
+
+.role-text {
+  font-weight: 800;
+}
+
+.citizen-text {
+  color: var(--color-citizen);
+}
+
+.werewolf-text {
+  color: var(--color-werewolf);
+}
+
+.werewolf-name {
+  color: var(--color-werewolf);
+}
+
+
+.vote-destination-title {
+  margin-top: 32px;
+}
+
+.vote-destination-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.vote-destination-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.vote-destination-player,
+.vote-destination-target {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.vote-destination-player {
+  font-weight: 600;
+}
+
+.vote-destination-arrow {
+  color: var(--color-light-text);
+}
+
+.vote-destination-target {
+  text-align: right;
+  font-weight: 700;
+}
+
+.vote-destination-target.werewolf-target {
+  color: var(--color-werewolf);
+}
+
+.vote-destination-abstain {
+  text-align: right;
+  color: var(--color-light-text);
+  font-size: 13px;
+}
+
+/* =========================
+   画面が狭い場合
+========================= */
+
+@media (max-width: 800px) {
+  .app {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .custom-topic-range {
+    flex-direction: column;
+  }
+
+  .result-vote-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .revealed-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .result-vote-list {
+    grid-template-columns: 1fr;
+  }
+
+  .revealed-list {
+    grid-template-columns: 1fr;
+  }
+
+  .vote-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vote-destination-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================
+   共通エラー表示
+========================= */
+
+.error-message {
+  margin: 12px 0;
+  padding: 10px 12px;
+  color: var(--color-important);
+  background: var(--color-important-soft);
+  border: 1px solid var(--color-important);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* =========================
+   効果音切り替え
+========================= */
+
+.sound-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+  width: auto;
+  padding: 6px 9px;
+  background: var(--color-background);
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sound-toggle:hover {
+  background: var(--color-surface);
+  opacity: 1;
+}
+
+/* =========================
+   遊び方
+========================= */
+
+.how-to-play h2 {
+  margin-bottom: 20px;
+}
+
+.rules-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rule;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rules-list li {
+  counter-increment: rule;
+  position: relative;
+  padding: 14px 14px 14px 48px;
+  background: var(--color-surface);
+  border-radius: 8px;
+}
+
+.rules-list li::before {
+  content: counter(rule);
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-progress);
+  color: var(--color-background);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rules-list strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.rules-list p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.how-to-play > .back {
+  margin-top: 16px;
+}
