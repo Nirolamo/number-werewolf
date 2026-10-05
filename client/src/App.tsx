@@ -22,14 +22,24 @@ type Player = {
   isHost: boolean
   isConnected: boolean
 }
-type Topic = {
-  id: string
-  text: string
-  min: number
-  max: number
-}
+type TopicType = 'NUMBER' | 'PLAYER'
+
+type Topic =
+  | {
+      id: string
+      text: string
+      type: 'NUMBER'
+      min: number
+      max: number
+    }
+  | {
+      id: string
+      text: string
+      type: 'PLAYER'
+    }
 
 type TopicSource = 'PRESET' | 'CUSTOM' | 'BOTH'
+type TopicTypeFilter = 'NUMBER' | 'PLAYER' | 'BOTH'
 
 type CustomTopicView = Topic & {
   isOwn: boolean
@@ -42,6 +52,7 @@ type RoomResponse = {
   players?: Player[]
   discussionSeconds?: number | null
   topicSource?: TopicSource
+  topicTypeFilter?: TopicTypeFilter
   showCustomTopics?: boolean
   customTopics?: CustomTopicView[]
   customTopicCount?: number
@@ -53,7 +64,7 @@ type ActionResponse = {
 }
 
 type Role = 'CITIZEN' | 'WEREWOLF'
-type AnswerMode = 'NUMBER' | 'OVER_MAX'
+type AnswerMode = 'NUMBER' | 'OVER_MAX' | 'PLAYER'
 type ResultStage = 'ANNOUNCE' | 'EXECUTED' | 'ROLE'
 
 type Answer =
@@ -64,6 +75,10 @@ type Answer =
   | {
       type: 'OVER_MAX'
       value: null
+    }
+  | {
+      type: 'PLAYER'
+      value: string
     }
   | {
       type: 'TIMEOUT'
@@ -101,8 +116,10 @@ type ReconnectResponse = RoomResponse & {
   phase?: string
   role?: Role
   topic?: string | null
-  min?: number
-  max?: number
+  topicType?: TopicType
+  min?: number | null
+  max?: number | null
+  answerOptions?: string[]
   answerEndsAt?: number | null
   hasAnswered?: boolean
   answerDraft?: Answer | null
@@ -190,8 +207,11 @@ function App() {
   // お題・役職・回答
   const [role, setRole] = useState<Role | null>(null)
   const [topic, setTopic] = useState<string | null>(null)
+  const [currentTopicType, setCurrentTopicType] =
+    useState<TopicType>('NUMBER')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(0)
+  const [answerOptions, setAnswerOptions] = useState<string[]>([])
   const [answerValue, setAnswerValue] = useState('')
   const [answerMode, setAnswerMode] = useState<AnswerMode>('NUMBER')
   const [answeredCount, setAnsweredCount] = useState(0)
@@ -203,9 +223,12 @@ function App() {
   // ゲーム設定・カスタムお題
   const [discussionSeconds, setDiscussionSeconds] = useState<number | null>(180)
   const [topicSource, setTopicSource] = useState<TopicSource>('PRESET')
+  const [topicTypeFilter, setTopicTypeFilter] =
+    useState<TopicTypeFilter>('BOTH')
   const [showCustomTopics, setShowCustomTopics] = useState(false)
   const [customTopics, setCustomTopics] = useState<CustomTopicView[]>([])
   const [customTopicCount, setCustomTopicCount] = useState(0)
+  const [customTopicType, setCustomTopicType] = useState<TopicType>('NUMBER')
   const [customTopicText, setCustomTopicText] = useState('')
   const [customTopicMin, setCustomTopicMin] = useState('0')
   const [customTopicMax, setCustomTopicMax] = useState('100')
@@ -246,10 +269,12 @@ function App() {
     const handleSettingsUpdated = (data: {
       discussionSeconds: number | null
       topicSource: TopicSource
+      topicTypeFilter: TopicTypeFilter
       showCustomTopics: boolean
     }) => {
       setDiscussionSeconds(data.discussionSeconds)
       setTopicSource(data.topicSource)
+      setTopicTypeFilter(data.topicTypeFilter)
       setShowCustomTopics(data.showCustomTopics)
     }
 
@@ -271,6 +296,9 @@ function App() {
       } else if (data.answerDraft?.type === 'NUMBER') {
         setAnswerMode('NUMBER')
         setAnswerValue(String(data.answerDraft.value))
+      } else if (data.answerDraft?.type === 'PLAYER') {
+        setAnswerMode('PLAYER')
+        setAnswerValue(data.answerDraft.value)
       }
 
       setSelectedVote(data.voteDraft ?? '')
@@ -279,17 +307,21 @@ function App() {
     const handleGameStarted = (data: {
       role: Role
       topic: string | null
-      min: number
-      max: number
+      topicType: TopicType
+      min: number | null
+      max: number | null
+      answerOptions: string[]
       answerEndsAt: number | null
     }) => {
       setRole(data.role)
       setTopic(data.topic)
-      setMin(data.min)
-      setMax(data.max)
+      setCurrentTopicType(data.topicType)
+      setMin(data.min ?? 0)
+      setMax(data.max ?? 0)
+      setAnswerOptions(data.answerOptions)
       setAnswerEndsAt(data.answerEndsAt)
       setAnswerValue('')
-      setAnswerMode('NUMBER')
+      setAnswerMode(data.topicType === 'PLAYER' ? 'PLAYER' : 'NUMBER')
       setAnsweredCount(0)
       setGameResult(null)
       setError('')
@@ -307,8 +339,9 @@ function App() {
 
     const handleAnswerReveal = (data: {
       topic: string
-      min: number
-      max: number
+      topicType: TopicType
+      min: number | null
+      max: number | null
       answerEndsAt?: number | null
       answers: RevealedAnswer[]
       discussionEndsAt: number | null
@@ -316,8 +349,9 @@ function App() {
       skipRequiredCount: number
     }) => {
       setTopic(data.topic)
-      setMin(data.min)
-      setMax(data.max)
+      setCurrentTopicType(data.topicType)
+      setMin(data.min ?? 0)
+      setMax(data.max ?? 0)
       setAnswerEndsAt(null)
       setRemainingAnswerSeconds(0)
       setRevealedAnswers(data.answers)
@@ -398,8 +432,10 @@ function App() {
       setDiscussionSeconds(data.discussionSeconds)
       setRole(null)
       setTopic(null)
+      setCurrentTopicType('NUMBER')
       setMin(0)
       setMax(0)
+      setAnswerOptions([])
       setAnswerEndsAt(null)
       setRemainingAnswerSeconds(0)
       setAnswerValue('')
@@ -555,6 +591,7 @@ function App() {
           )
 
           setTopicSource(response.topicSource ?? 'PRESET')
+          setTopicTypeFilter(response.topicTypeFilter ?? 'BOTH')
           setShowCustomTopics(response.showCustomTopics ?? false)
           setCustomTopics(response.customTopics ?? [])
           setCustomTopicCount(response.customTopicCount ?? 0)
@@ -566,8 +603,10 @@ function App() {
           if (response.phase === 'ANSWERING') {
             setRole(response.role ?? null)
             setTopic(response.topic ?? null)
+            setCurrentTopicType(response.topicType ?? 'NUMBER')
             setMin(response.min ?? 0)
             setMax(response.max ?? 0)
+            setAnswerOptions(response.answerOptions ?? [])
             setAnswerEndsAt(response.answerEndsAt ?? null)
             setAnsweredCount(response.answeredCount ?? 0)
             setTotalCount(response.totalCount ?? 0)
@@ -579,8 +618,13 @@ function App() {
               } else if (response.answerDraft?.type === 'NUMBER') {
                 setAnswerMode('NUMBER')
                 setAnswerValue(String(response.answerDraft.value))
+              } else if (response.answerDraft?.type === 'PLAYER') {
+                setAnswerMode('PLAYER')
+                setAnswerValue(response.answerDraft.value)
               } else {
-                setAnswerMode('NUMBER')
+                setAnswerMode(
+                  response.topicType === 'PLAYER' ? 'PLAYER' : 'NUMBER',
+                )
                 setAnswerValue('')
               }
             }
@@ -594,8 +638,10 @@ function App() {
 
           if (response.phase === 'DISCUSSION') {
             setTopic(response.topic ?? null)
+            setCurrentTopicType(response.topicType ?? 'NUMBER')
             setMin(response.min ?? 0)
             setMax(response.max ?? 0)
+            setAnswerOptions([])
             setRevealedAnswers(response.answers ?? [])
             setDiscussionEndsAt(response.discussionEndsAt ?? null)
             setSkipCount(response.skipCount ?? 0)
@@ -831,6 +877,7 @@ function App() {
         setCustomTopics(response.customTopics ?? [])
         setCustomTopicCount(response.customTopicCount ?? 0)
         setTopicSource(response.topicSource ?? 'PRESET')
+        setTopicTypeFilter(response.topicTypeFilter ?? 'BOTH')
         setShowCustomTopics(response.showCustomTopics ?? false)
         setScreen('lobby')
       },
@@ -888,6 +935,7 @@ function App() {
         setCustomTopics(response.customTopics ?? [])
         setCustomTopicCount(response.customTopicCount ?? 0)
         setTopicSource(response.topicSource ?? 'PRESET')
+        setTopicTypeFilter(response.topicTypeFilter ?? 'BOTH')
         setShowCustomTopics(response.showCustomTopics ?? false)
         setScreen('lobby')
       },
@@ -906,6 +954,23 @@ function App() {
       (response: ActionResponse) => {
         if (!response.ok) {
           setError(response.message ?? '出題設定の変更に失敗しました')
+        }
+      },
+    )
+  }
+
+  function handleTopicTypeFilterChange(value: string) {
+    setError('')
+
+    socket.emit(
+      'updateSettings',
+      {
+        roomCode,
+        topicTypeFilter: value,
+      },
+      (response: ActionResponse) => {
+        if (!response.ok) {
+          setError(response.message ?? '出題タイプの変更に失敗しました')
         }
       },
     )
@@ -1107,23 +1172,36 @@ function App() {
   function submitAnswer() {
     setError('')
 
-    if (answerMode === 'NUMBER' && answerValue.trim() === '') {
-      setError('回答を入力してください')
+    if (answerValue.trim() === '' && answerMode !== 'OVER_MAX') {
+      setError(
+        currentTopicType === 'PLAYER'
+          ? 'プレイヤーを選択してください'
+          : '回答を入力してください',
+      )
       return
     }
 
-    socket.emit(
-      'submitAnswer',
-      answerMode === 'OVER_MAX'
+    const answerData =
+      currentTopicType === 'PLAYER'
         ? {
             roomCode,
-            type: 'OVER_MAX',
-          }
-        : {
-            roomCode,
-            type: 'NUMBER',
+            type: 'PLAYER',
             value: answerValue,
-          },
+          }
+        : answerMode === 'OVER_MAX'
+          ? {
+              roomCode,
+              type: 'OVER_MAX',
+            }
+          : {
+              roomCode,
+              type: 'NUMBER',
+              value: answerValue,
+            }
+
+    socket.emit(
+      'submitAnswer',
+      answerData,
       (response: ActionResponse) => {
         if (!response.ok) {
           setError(response.message ?? '回答に失敗しました')
@@ -1168,8 +1246,13 @@ function App() {
       {
         roomCode,
         text: customTopicText,
-        min: customTopicMin,
-        max: customTopicMax,
+        topicType: customTopicType,
+        ...(customTopicType === 'NUMBER'
+          ? {
+              min: customTopicMin,
+              max: customTopicMax,
+            }
+          : {}),
       },
       (response: ActionResponse) => {
         if (!response.ok) {
@@ -1306,17 +1389,17 @@ function App() {
               </li>
 
               <li>
-                <strong>数字で回答</strong>
+                <strong>お題に回答</strong>
                 <p>
-                  市民にはお題と回答範囲が表示されます。人狼にはお題が表示されず、
-                  回答範囲だけが表示されます。
+                  市民にはお題が表示され、数字またはプレイヤーを選んで回答します。
+                  人狼にはお題が表示されませんが、同じ回答方法で回答します。
                 </p>
               </li>
 
               <li>
                 <strong>話し合い</strong>
                 <p>
-                  全員の回答が公開されます。数字や会話を手がかりに、
+                  全員の回答が公開されます。回答や会話を手がかりに、
                   誰が人狼なのかを推理します。
                 </p>
               </li>
@@ -1493,6 +1576,31 @@ function App() {
                 </div>
 
                 <div className="setting-row">
+                  <span>出題タイプ</span>
+
+                  {isHost ? (
+                    <select
+                      value={topicTypeFilter}
+                      onChange={(event) =>
+                        handleTopicTypeFilterChange(event.target.value)
+                      }
+                    >
+                      <option value="NUMBER">数値回答のみ</option>
+                      <option value="PLAYER">プレイヤー選択のみ</option>
+                      <option value="BOTH">両方</option>
+                    </select>
+                  ) : (
+                    <strong>
+                      {topicTypeFilter === 'NUMBER'
+                        ? '数値回答のみ'
+                        : topicTypeFilter === 'PLAYER'
+                          ? 'プレイヤー選択のみ'
+                          : '両方'}
+                    </strong>
+                  )}
+                </div>
+
+                <div className="setting-row">
                   <span>話し合い時間</span>
 
                   {isHost ? (
@@ -1546,6 +1654,19 @@ function App() {
 
                   <div className="custom-topic-form">
                     <label>
+                      お題タイプ
+                      <select
+                        value={customTopicType}
+                        onChange={(event) =>
+                          setCustomTopicType(event.target.value as TopicType)
+                        }
+                      >
+                        <option value="NUMBER">数値回答</option>
+                        <option value="PLAYER">プレイヤー選択</option>
+                      </select>
+                    </label>
+
+                    <label>
                       お題
                       <input
                         type="text"
@@ -1556,35 +1677,37 @@ function App() {
                       />
                     </label>
 
-                    <div className="custom-topic-range">
-                      <label>
-                        <span className="range-label">
-                          最小値 <span className="range-label-en">MIN</span>
-                        </span>
+                    {customTopicType === 'NUMBER' && (
+                      <div className="custom-topic-range">
+                        <label>
+                          <span className="range-label">
+                            最小値 <span className="range-label-en">MIN</span>
+                          </span>
 
-                        <input
-                          type="number"
-                          value={customTopicMin}
-                          onChange={(event) =>
-                            setCustomTopicMin(event.target.value)
-                          }
-                        />
-                      </label>
+                          <input
+                            type="number"
+                            value={customTopicMin}
+                            onChange={(event) =>
+                              setCustomTopicMin(event.target.value)
+                            }
+                          />
+                        </label>
 
-                      <label>
-                        <span className="range-label">
-                          最大値 <span className="range-label-en">MAX</span>
-                        </span>
+                        <label>
+                          <span className="range-label">
+                            最大値 <span className="range-label-en">MAX</span>
+                          </span>
 
-                        <input
-                          type="number"
-                          value={customTopicMax}
-                          onChange={(event) =>
-                            setCustomTopicMax(event.target.value)
-                          }
-                        />
-                      </label>
-                    </div>
+                          <input
+                            type="number"
+                            value={customTopicMax}
+                            onChange={(event) =>
+                              setCustomTopicMax(event.target.value)
+                            }
+                          />
+                        </label>
+                      </div>
+                    )}
 
                     <button
                       className="secondary"
@@ -1625,7 +1748,9 @@ function App() {
                               <strong>{customTopic.text}</strong>
 
                               <span>
-                                {customTopic.min} ～ {customTopic.max}
+                                {customTopic.type === 'NUMBER'
+                                  ? `数値回答：${customTopic.min} ～ ${customTopic.max}`
+                                  : 'プレイヤー選択'}
                                 {showCustomTopics &&
                                   customTopic.isOwn &&
                                   ' ・自分のお題'}
@@ -1695,69 +1820,106 @@ function App() {
               <strong>{role === 'WEREWOLF' ? '？？？' : topic}</strong>
             </div>
 
-            <p className="range">
-              回答範囲：{min} ～ {max}
-            </p>
+            {currentTopicType === 'NUMBER' ? (
+              <>
+                <p className="range">
+                  回答範囲：{min} ～ {max}
+                </p>
 
-            <div className="answer-form">
-              <input
-                type="number"
-                min={min}
-                max={max}
-                value={answerValue}
-                onChange={(event) => {
-                  const value = event.target.value
+                <div className="answer-form">
+                  <input
+                    type="number"
+                    min={min}
+                    max={max}
+                    value={answerValue}
+                    onChange={(event) => {
+                      const value = event.target.value
 
-                  setAnswerValue(value)
-                  setAnswerMode('NUMBER')
-                  setError('')
+                      setAnswerValue(value)
+                      setAnswerMode('NUMBER')
+                      setError('')
 
-                  if (value.trim() === '') {
-                    socket.emit('updateAnswerDraft', {
-                      roomCode,
-                      type: 'CLEAR',
-                    })
-                  } else {
-                    socket.emit('updateAnswerDraft', {
-                      roomCode,
-                      type: 'NUMBER',
-                      value,
-                    })
-                  }
-                }}
-              />
+                      if (value.trim() === '') {
+                        socket.emit('updateAnswerDraft', {
+                          roomCode,
+                          type: 'CLEAR',
+                        })
+                      } else {
+                        socket.emit('updateAnswerDraft', {
+                          roomCode,
+                          type: 'NUMBER',
+                          value,
+                        })
+                      }
+                    }}
+                  />
 
-              <button
-                type="button"
-                className={`secondary over-max-button ${
-                  answerMode === 'OVER_MAX' ? 'active' : ''
-                }`}
-                onClick={() => {
-                  if (answerMode === 'OVER_MAX') {
-                    setAnswerMode('NUMBER')
+                  <button
+                    type="button"
+                    className={`secondary over-max-button ${
+                      answerMode === 'OVER_MAX' ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      if (answerMode === 'OVER_MAX') {
+                        setAnswerMode('NUMBER')
 
-                    socket.emit('updateAnswerDraft', {
-                      roomCode,
-                      type: 'CLEAR',
-                    })
-                  } else {
-                    setAnswerMode('OVER_MAX')
-                    setAnswerValue('')
+                        socket.emit('updateAnswerDraft', {
+                          roomCode,
+                          type: 'CLEAR',
+                        })
+                      } else {
+                        setAnswerMode('OVER_MAX')
+                        setAnswerValue('')
 
-                    socket.emit('updateAnswerDraft', {
-                      roomCode,
-                      type: 'OVER_MAX',
-                    })
-                  }
+                        socket.emit('updateAnswerDraft', {
+                          roomCode,
+                          type: 'OVER_MAX',
+                        })
+                      }
 
-                  setError('')
-                }}
-              >
-                {max}以上
-              </button>
+                      setError('')
+                    }}
+                  >
+                    {max}以上
+                  </button>
 
-              <button onClick={submitAnswer}>回答確定</button>
-            </div>
+                  <button onClick={submitAnswer}>回答確定</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="range">回答するプレイヤーを1人選択</p>
+
+                <div className="vote-list player-answer-list">
+                  {answerOptions.map((playerName) => (
+                    <button
+                      key={playerName}
+                      type="button"
+                      className={`vote-option ${
+                        answerValue === playerName ? 'selected' : ''
+                      }`}
+                      onClick={() => {
+                        setAnswerValue(playerName)
+                        setAnswerMode('PLAYER')
+                        setError('')
+
+                        socket.emit('updateAnswerDraft', {
+                          roomCode,
+                          type: 'PLAYER',
+                          value: playerName,
+                        })
+                      }}
+                    >
+                      {playerName}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="answer-form">
+                  <button onClick={submitAnswer}>回答確定</button>
+                </div>
+              </>
+            )}
 
             <ErrorMessage message={error} />
           </div>
