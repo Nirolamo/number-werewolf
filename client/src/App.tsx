@@ -328,7 +328,7 @@ function App() {
       setAnsweredCount(0);
       setGameResult(null);
       setError("");
-      playSound("/sounds/start.mp3", 0.6);
+      playSound("/sounds/start.mp3", 0.69);
       setScreen("answer");
     };
 
@@ -362,7 +362,7 @@ function App() {
       setSkipCount(data.skipCount);
       setSkipRequiredCount(data.skipRequiredCount);
       setHasSkipped(false);
-      playSound("/sounds/reveal.mp3", 0.6);
+      playSound("/sounds/reveal.mp3", 0.58);
       setScreen("discussion");
     };
 
@@ -390,7 +390,7 @@ function App() {
       setShowSkipNotice(data.wasSkipped);
       setIsRevote(false);
       setError("");
-      playSound("/sounds/vote.mp3", 0.6);
+      playSound("/sounds/vote.mp3", 0.82);
       setScreen("voting");
     };
 
@@ -415,7 +415,7 @@ function App() {
       setShowSkipNotice(false);
       setIsRevote(true);
       setError("");
-      playSound("/sounds/vote.mp3", 0.6);
+      playSound("/sounds/vote.mp3", 0.82);
       setScreen("voting");
     };
 
@@ -730,7 +730,7 @@ function App() {
 
     if (resultStage === "EXECUTED") {
       const timer = window.setTimeout(() => {
-        playSound("/sounds/result.mp3", 0.7);
+        playSound("/sounds/result.mp3", 0.63);
       }, 580);
 
       return () => {
@@ -740,7 +740,7 @@ function App() {
 
     if (resultStage === "ROLE") {
       const timer = window.setTimeout(() => {
-        playSound("/sounds/role-reveal.mp3", 0.75);
+        playSound("/sounds/role-reveal.mp3", 0.67);
       }, 4800);
 
       return () => {
@@ -1340,7 +1340,7 @@ function App() {
           <>
             <h1>Ni狼lamo</h1>
 
-            <p className="subtitle">人狼を見つけろ</p>
+            <p className="subtitle">数字で答えて、人狼を見つけろ。</p>
 
             <div className="menu">
               <button
