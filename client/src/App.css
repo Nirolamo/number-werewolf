@@ -40,7 +40,7 @@
 
   background:
     linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
-    url("/bg-nirolamo.png");
+    url('/bg-nirolamo.png');
 
   background-size: cover;
   background-position: center;
@@ -259,7 +259,6 @@ button.back {
   gap: 8px;
   min-width: 0;
   padding: 12px 14px;
-  background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: 8px;
 }
@@ -804,7 +803,7 @@ button.back {
 
 .role-reveal-role {
   display: inline-block;
-  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-family: 'Yu Mincho', 'Hiragino Mincho ProN', serif;
   font-size: 58px;
   font-weight: 900;
   line-height: 1;
@@ -1083,4 +1082,65 @@ button.back {
 
 .how-to-play > .back {
   margin-top: 16px;
+}
+
+/* =========================
+   効果音ボリューム
+========================= */
+.sound-control {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 210px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.sound-icon {
+  flex-shrink: 0;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.sound-volume-slider {
+  width: 120px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  accent-color: var(--color-progress);
+  cursor: pointer;
+}
+
+.sound-volume-value {
+  width: 38px;
+  flex-shrink: 0;
+  text-align: right;
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .sound-control {
+    top: 8px;
+    right: 8px;
+    width: 180px;
+    padding: 6px 8px;
+  }
+
+  .sound-volume-slider {
+    width: 92px;
+  }
 }
