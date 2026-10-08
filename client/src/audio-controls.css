@@ -98,3 +98,109 @@
     grid-template-columns: 68px minmax(0, 1fr);
   }
 }
+
+/* =========================
+   再生中BGM・歌詞
+========================= */
+.bgm-now-playing-row {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-normal);
+  font-size: 11px;
+}
+
+.bgm-now-playing-row > span {
+  font-weight: 800;
+}
+
+.bgm-now-playing-row strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lyrics-toggle-button,
+.lyrics-close-button {
+  width: auto;
+}
+
+.lyrics-toggle-button {
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.lyrics-panel {
+  position: fixed;
+  top: 190px;
+  right: 12px;
+  z-index: 99;
+  width: min(420px, calc(100vw - 24px));
+  max-height: calc(100vh - 210px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lyrics-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lyrics-close-button {
+  padding: 2px 8px;
+  font-size: 18px;
+  line-height: 1.2;
+  background: transparent;
+  color: var(--color-muted);
+  border: none;
+}
+
+.lyrics-scroll {
+  margin: 0;
+  padding: 14px 16px 24px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--color-normal);
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+@media (max-width: 520px) {
+  .bgm-now-playing-row {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    gap: 5px;
+  }
+
+  .lyrics-panel {
+    top: 182px;
+    right: 8px;
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 198px);
+  }
+
+  .lyrics-scroll {
+    padding: 12px 14px 20px;
+    font-size: 12px;
+  }
+}

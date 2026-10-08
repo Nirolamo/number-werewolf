@@ -97,6 +97,201 @@ const PLAYABLE_BGM_TRACKS = BGM_TRACKS.filter(
   (track): track is BgmTrack & { path: string } => track.path !== null,
 )
 
+const SHIMA_LYRICS = `しーま　またLINE返さない
+しーま　記念日覚えてない
+しーま　迎え行っても起きてない
+「今行く」って悪びれてない
+
+しーま　触れたら火傷じゃない？
+しーま　恋なら自然消滅
+しーま　八王子のかしら
+最寄りは山田　夜なら終わらない
+
+朝に弱い　待ち合わせにもいない
+迎えに行ってもまだ起きてない
+「あと5分」がまた30分
+しーまの時計だけ違う時刻
+
+LINE返さない　既読もつかない
+ついたと思えば今度は返さない
+記念日なんて覚えちゃいない
+でもタバコの銘柄間違えない
+
+Peace Light　火をつける
+IQOS　lil HYBRID　めじるしだらけ
+煙だけ残して夜に消える
+巻くのは女とタバコだけ
+
+ラップ上等　元カノちかこでもラブ上等
+名前だけ残って煙の向こうに
+調布駅　終電前
+ディープキスして残した伝説
+
+昨日の約束　今日には知らない
+恋なら熱いが冷めるのも早い
+自然消滅　得意のフェード
+追われてるうちがしーまのペース
+
+酒が入ったら調子が上がる
+夜が深くなるほど声も上がる
+グラスが空けばまた次を注ぐ
+騒ぐ八王子　まだ夜は続く
+
+one pac, two pac, three pac, four
+一本　二本　飲み干す bottle
+殻になるたび瓶を掲げる
+頭の上で逆さにして見せる
+
+南のドルフィンに溺れ
+八王子南口　夜は続いて
+雪が積もる中やらかし
+ラインは消しとけよと言ったのに
+
+超高速道路乗った whip
+山田に戻る頃には midnight
+気づけば外には朝の光
+昨日の予定なんてもう知らない
+
+朝起きれないのに今夜は all night
+明日の集合？　まあなんとかなる
+「あと5分」ってまた言うだろ
+それでも今日も悪びれない顔
+
+しーま　またLINE返さない
+しーま　記念日覚えてない
+しーま　迎え行っても起きてない
+「今行く」って悪びれてない
+
+しーま　触れたら火傷じゃない？
+しーま　恋なら自然消滅
+しーま　八王子のかしら
+最寄りは山田　夜なら終わらない
+
+南平高校　卒業
+ノーチャイム　それが日常
+校門入ったその先に待つ
+見上げるくらいクソ長い階段
+
+毎朝登って鍛えたはずが
+海とフットサルで　あしがつる
+「余裕だし」ってまだ強がる
+座って黙ってふくらはぎ伸ばす
+
+ナンペイ抜けて八王子 side
+山田がホーム　真夜中 drive
+遅刻はするし朝には弱い
+でも夜になったら誰より長い
+
+家の近くには磯沼ファーム
+窓開けた瞬間　漂うフレーバー
+八王子の風に乗ってくる匂い
+しーまは今日も気にせず素通り
+
+昨日の約束　今日には迷子
+今日の集合　しーまだけ最後
+「もう着く」からまた30分
+こいつの5分は長すぎる5分
+
+八王子うまれ
+HIP HOP育ち
+悪ノリするやつ
+だいたい友達
+
+すぐる曰く八王子のかしら
+証拠はないけど態度はいいかしら
+
+山田から南口　夜をまたぐ
+帰って寝たなら昼まで起きない
+夏になったら行きたいサマラン
+しーまが愛するサマーランド
+波のプール　ウォータースライダー
+そこじゃ誰よりはしゃぐ八王子のかしら
+真夏の太陽　照り返す水面
+浮き輪片手に向かってくプール
+八王子からならすぐそこだろ
+夏が来るたびまた行きたくなる
+
+サマラン　サマラン
+口に出すだけでテンション上がる
+サマラン　サマラン
+夏の八王子なら外せない場所
+
+Peace Light　煙が揺れてる
+窓の外　街灯が流れてる
+boom boom　うなるベース
+低音で震える夜の八王子
+
+山田　八王子　ナンペイ
+場所が変わっても変わらないペース
+女に追われても返事はない
+仲間に呼ばれりゃまた夜に出たい
+
+ナンペイ
+ノーチャイム
+クソ長い階段
+
+山田
+八王子
+八王子のかしら
+
+Peace Light
+IQOS
+lil HYBRID
+
+ちかこは過去
+調布に伝説
+南のドルフィン
+夜ならいつでも上等
+
+寝坊
+遅刻
+既読は放置
+
+家の近く
+磯沼ファーム
+風向き次第で
+今日もくさい
+
+しーま
+しーま
+全部まとめて
+しーま
+
+しーま　またLINE返さない
+しーま　記念日覚えてない
+しーま　迎え行っても起きてない
+「今行く」って今日もまだ来ない
+
+しーま　触れたら火傷じゃない？
+しーま　恋なら自然消滅
+しーま　八王子のかしら
+最寄りは山田　夜なら終わらない
+
+しーま
+しーま
+南平から山田
+しーま
+しーま
+山田から八王子
+
+女は忘れる
+記念日忘れる
+LINEも忘れる
+待ち合わせも忘れる
+
+夜ならドルフィン
+朝なら寝てる
+夏ならサマラン
+それでもかしら
+
+しーま
+しーま
+今日も変わらない
+
+八王子
+山田
+しーま`
+
 type Answer =
   | {
       type: 'NUMBER'
@@ -277,6 +472,8 @@ function App() {
   const [soundVolume, setSoundVolume] = useState(() => getSoundVolume())
   const [bgmVolume, setBgmVolume] = useState(() => getBgmVolume())
   const [selectedBgm, setSelectedBgm] = useState<BgmTrackId>(() => getBgmTrack())
+  const [playingBgm, setPlayingBgm] = useState<BgmTrackId | null>(null)
+  const [showLyrics, setShowLyrics] = useState(false)
   const bgmContextRef = useRef<AudioContext | null>(null)
   const bgmGainRef = useRef<GainNode | null>(null)
   const bgmBuffersRef = useRef<Map<BgmTrackId, AudioBuffer>>(new Map())
@@ -427,6 +624,8 @@ function App() {
     bgmShouldPlayRef.current = false
     bgmIsPlayingRef.current = false
     bgmCurrentTrackRef.current = null
+    setPlayingBgm(null)
+    setShowLyrics(false)
     stopCurrentBgmSource()
   }
 
@@ -494,6 +693,8 @@ function App() {
       bgmSourceRef.current = source
       bgmCurrentTrackRef.current = trackId
       bgmIsPlayingRef.current = true
+      setPlayingBgm(trackId)
+      setShowLyrics((current) => (trackId === 'SHIMA' ? current : false))
       updateBgmAudioVolume(getBgmVolume())
 
       source.onended = () => {
@@ -512,6 +713,8 @@ function App() {
         if (!nextTrackId) {
           bgmIsPlayingRef.current = false
           bgmCurrentTrackRef.current = null
+          setPlayingBgm(null)
+          setShowLyrics(false)
           return
         }
 
@@ -522,6 +725,8 @@ function App() {
     } catch (error) {
       console.warn('BGMの再生に失敗しました:', error)
       bgmIsPlayingRef.current = false
+      setPlayingBgm(null)
+      setShowLyrics(false)
     }
   }
 
@@ -1749,7 +1954,44 @@ function App() {
             ))}
           </select>
         </label>
+
+        <div className="bgm-now-playing-row">
+          <span>再生中</span>
+          <strong>
+            {playingBgm
+              ? getSelectedBgm(playingBgm).label
+              : selectedBgm === 'NONE'
+                ? 'BGMなし'
+                : '停止中'}
+          </strong>
+          {playingBgm === 'SHIMA' && (
+            <button
+              type="button"
+              className="lyrics-toggle-button"
+              onClick={() => setShowLyrics((current) => !current)}
+            >
+              {showLyrics ? '歌詞を閉じる' : '歌詞を見る'}
+            </button>
+          )}
+        </div>
       </div>
+
+      {showLyrics && playingBgm === 'SHIMA' && (
+        <aside className="lyrics-panel" aria-label="しーまの歌詞">
+          <div className="lyrics-panel-header">
+            <strong>しーま — 歌詞</strong>
+            <button
+              type="button"
+              className="lyrics-close-button"
+              onClick={() => setShowLyrics(false)}
+              aria-label="歌詞を閉じる"
+            >
+              ×
+            </button>
+          </div>
+          <pre className="lyrics-scroll">{SHIMA_LYRICS}</pre>
+        </aside>
+      )}
 
       <div
         className={`card ${
