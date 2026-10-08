@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import './audio-controls.css'
 import { socket } from './socket'
 
 type Screen =
@@ -66,6 +67,35 @@ type ActionResponse = {
 type Role = 'CITIZEN' | 'WEREWOLF'
 type AnswerMode = 'NUMBER' | 'OVER_MAX' | 'PLAYER'
 type ResultStage = 'ANNOUNCE' | 'EXECUTED' | 'ROLE'
+
+type BgmTrackId = 'NONE' | 'SHIMA' | 'BGM1'
+
+type BgmTrack = {
+  id: BgmTrackId
+  label: string
+  path: string | null
+  baseVolume: number
+}
+
+const BGM_TRACKS: BgmTrack[] = [
+  { id: 'NONE', label: 'BGMなし', path: null, baseVolume: 1 },
+  {
+    id: 'BGM1',
+    label: 'BGM1',
+    path: '/sounds/bgm/bgm1.mp3',
+    baseVolume: 1,
+  },
+  {
+    id: 'SHIMA',
+    label: 'しーま',
+    path: '/sounds/bgm/shima.mp3',
+    baseVolume: 0.66,
+  },
+]
+
+const PLAYABLE_BGM_TRACKS = BGM_TRACKS.filter(
+  (track): track is BgmTrack & { path: string } => track.path !== null,
+)
 
 type Answer =
   | {
@@ -181,6 +211,37 @@ function getSoundVolume() {
   return Math.min(100, Math.max(0, parsedVolume))
 }
 
+const BGM_VOLUME_KEY = 'numberWerewolfBgmVolume'
+const BGM_TRACK_KEY = 'numberWerewolfBgmTrack'
+const DEFAULT_BGM_VOLUME = 35
+const DEFAULT_BGM_TRACK: BgmTrackId = 'BGM1'
+
+function getBgmVolume() {
+  const savedValue = localStorage.getItem(BGM_VOLUME_KEY)
+
+  if (savedValue === null) {
+    return DEFAULT_BGM_VOLUME
+  }
+
+  const savedVolume = Number(savedValue)
+
+  if (!Number.isFinite(savedVolume)) {
+    return DEFAULT_BGM_VOLUME
+  }
+
+  return Math.min(100, Math.max(0, savedVolume))
+}
+
+function getBgmTrack() {
+  const savedTrack = localStorage.getItem(BGM_TRACK_KEY) as BgmTrackId | null
+
+  if (savedTrack && BGM_TRACKS.some((track) => track.id === savedTrack)) {
+    return savedTrack
+  }
+
+  return DEFAULT_BGM_TRACK
+}
+
 function playSound(path: string, baseVolume = 0.6) {
   const masterVolume = getSoundVolume() / 100
 
@@ -214,6 +275,12 @@ function App() {
   const [screen, setScreen] = useState<Screen>('home')
   const [error, setError] = useState('')
   const [soundVolume, setSoundVolume] = useState(() => getSoundVolume())
+  const [bgmVolume, setBgmVolume] = useState(() => getBgmVolume())
+  const [selectedBgm, setSelectedBgm] = useState<BgmTrackId>(() =>
+    getBgmTrack(),
+  )
+  const bgmAudioRef = useRef<HTMLAudioElement | null>(null)
+  const bgmIsPlayingRef = useRef(false)
 
   // プレイヤー・ルーム
   const [username, setUsername] = useState('')
@@ -268,6 +335,99 @@ function App() {
   const [isRevote, setIsRevote] = useState(false)
   const [gameResult, setGameResult] = useState<GameResult | null>(null)
   const [resultStage, setResultStage] = useState<ResultStage>('ANNOUNCE')
+
+  function getSelectedBgm(trackId = selectedBgm) {
+    return BGM_TRACKS.find((track) => track.id === trackId) ?? BGM_TRACKS[0]
+  }
+
+  function getOrCreateBgmAudio() {
+    if (!bgmAudioRef.current) {
+      const audio = new Audio()
+      audio.loop = false
+      audio.preload = 'auto'
+      bgmAudioRef.current = audio
+    }
+
+    return bgmAudioRef.current
+  }
+
+  function updateBgmAudioVolume(volume = bgmVolume, trackId = selectedBgm) {
+    const audio = bgmAudioRef.current
+
+    if (!audio) {
+      return
+    }
+
+    const track = getSelectedBgm(trackId)
+    audio.volume = Math.min(1, Math.max(0, track.baseVolume * (volume / 100)))
+  }
+
+  function stopBgmAndReset() {
+    const audio = bgmAudioRef.current
+
+    bgmIsPlayingRef.current = false
+
+    if (!audio) {
+      return
+    }
+
+    audio.onended = null
+    audio.pause()
+    audio.currentTime = 0
+  }
+
+  function getNextBgmTrackId(currentTrackId: BgmTrackId) {
+    if (PLAYABLE_BGM_TRACKS.length === 0) {
+      return null
+    }
+
+    const currentIndex = PLAYABLE_BGM_TRACKS.findIndex(
+      (track) => track.id === currentTrackId,
+    )
+
+    if (currentIndex === -1) {
+      return PLAYABLE_BGM_TRACKS[0].id
+    }
+
+    const nextIndex = (currentIndex + 1) % PLAYABLE_BGM_TRACKS.length
+    return PLAYABLE_BGM_TRACKS[nextIndex].id
+  }
+
+  function startBgmFromBeginning(trackId = selectedBgm) {
+    const track = getSelectedBgm(trackId)
+
+    if (!track.path) {
+      stopBgmAndReset()
+      return
+    }
+
+    const audio = getOrCreateBgmAudio()
+
+    audio.onended = null
+    audio.pause()
+    audio.src = track.path
+    audio.currentTime = 0
+    audio.loop = false
+    updateBgmAudioVolume(getBgmVolume(), trackId)
+    bgmIsPlayingRef.current = true
+
+    audio.onended = () => {
+      const nextTrackId = getNextBgmTrackId(trackId)
+
+      if (!nextTrackId) {
+        bgmIsPlayingRef.current = false
+        return
+      }
+
+      setSelectedBgm(nextTrackId)
+      localStorage.setItem(BGM_TRACK_KEY, nextTrackId)
+      startBgmFromBeginning(nextTrackId)
+    }
+
+    void audio.play().catch(() => {
+      bgmIsPlayingRef.current = false
+    })
+  }
 
   // Socket.IOイベント
   useEffect(() => {
@@ -342,6 +502,7 @@ function App() {
       setAnsweredCount(0)
       setGameResult(null)
       setError('')
+      stopBgmAndReset()
       playSound('/sounds/start.mp3', 0.69)
       setScreen('answer')
     }
@@ -480,6 +641,7 @@ function App() {
     const handleKickedFromRoom = () => {
       window.alert('ホストによってルームから退出されました')
 
+      stopBgmAndReset()
       sessionStorage.removeItem('numberWerewolfRoomCode')
 
       setRoomCode('')
@@ -495,6 +657,7 @@ function App() {
     const handleRoomDisbanded = () => {
       window.alert('ホストが部屋を解散しました')
 
+      stopBgmAndReset()
       sessionStorage.removeItem('numberWerewolfRoomCode')
 
       setRoomCode('')
@@ -771,6 +934,27 @@ function App() {
     }
   }, [screen, resultStage, gameResult])
 
+  // 結果画面に入ったら、選択中のBGMを頭から再生
+  useEffect(() => {
+    if (screen !== 'result') {
+      return
+    }
+
+    startBgmFromBeginning()
+  }, [screen])
+
+  // BGM音量をリアルタイム反映
+  useEffect(() => {
+    updateBgmAudioVolume()
+  }, [bgmVolume])
+
+  // 画面を閉じたときにBGMを停止
+  useEffect(() => {
+    return () => {
+      bgmAudioRef.current?.pause()
+    }
+  }, [])
+
   // 回答タイマー
   useEffect(() => {
     if (!answerEndsAt) {
@@ -867,6 +1051,62 @@ function App() {
 
     setSoundVolume(nextVolume)
     localStorage.setItem(SOUND_VOLUME_KEY, String(nextVolume))
+  }
+
+  function handleBgmVolumeChange(value: string) {
+    const parsedVolume = Number(value)
+    const nextVolume = Number.isFinite(parsedVolume)
+      ? Math.min(100, Math.max(0, parsedVolume))
+      : DEFAULT_BGM_VOLUME
+
+    setBgmVolume(nextVolume)
+    localStorage.setItem(BGM_VOLUME_KEY, String(nextVolume))
+
+    const audio = bgmAudioRef.current
+    if (audio) {
+      const track = getSelectedBgm()
+      audio.volume = Math.min(
+        1,
+        Math.max(0, track.baseVolume * (nextVolume / 100)),
+      )
+    }
+  }
+
+  function handleBgmTrackChange(value: string) {
+    const nextTrack = value as BgmTrackId
+
+    if (!BGM_TRACKS.some((track) => track.id === nextTrack)) {
+      return
+    }
+
+    setSelectedBgm(nextTrack)
+    localStorage.setItem(BGM_TRACK_KEY, nextTrack)
+
+    const shouldPlayBgm = ['create', 'join', 'lobby', 'result'].includes(screen)
+
+    if (nextTrack === 'NONE') {
+      stopBgmAndReset()
+    } else if (bgmIsPlayingRef.current || shouldPlayBgm) {
+      startBgmFromBeginning(nextTrack)
+    }
+  }
+
+  function handleEnterCreateScreen() {
+    setError('')
+    startBgmFromBeginning()
+    setScreen('create')
+  }
+
+  function handleEnterJoinScreen() {
+    setError('')
+    startBgmFromBeginning()
+    setScreen('join')
+  }
+
+  function handleBackToHome() {
+    setError('')
+    stopBgmAndReset()
+    setScreen('home')
   }
 
   function handleCreateRoom() {
@@ -1108,6 +1348,7 @@ function App() {
   }
 
   function returnToHome() {
+    stopBgmAndReset()
     sessionStorage.removeItem('numberWerewolfRoomCode')
 
     setRoomCode('')
@@ -1343,24 +1584,62 @@ function App() {
 
   return (
     <main className="app">
-      <div className="sound-control" aria-label="効果音の音量">
-        <span className="sound-icon" aria-hidden="true">
-          {soundVolume === 0 ? '🔇' : soundVolume < 50 ? '🔉' : '🔊'}
-        </span>
+      <div className="audio-control-panel" aria-label="音設定">
+        <div className="audio-control-row">
+          <span className="audio-control-label">効果音</span>
+          <span className="audio-control-icon" aria-hidden="true">
+            {soundVolume === 0 ? '🔇' : soundVolume < 50 ? '🔉' : '🔊'}
+          </span>
+          <input
+            className="audio-volume-slider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={soundVolume}
+            onChange={(event) => handleSoundVolumeChange(event.target.value)}
+            aria-label="効果音の音量"
+            aria-valuetext={`${soundVolume}%`}
+          />
+          <span className="audio-volume-value">{soundVolume}%</span>
+        </div>
 
-        <input
-          className="sound-volume-slider"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value={soundVolume}
-          onChange={(event) => handleSoundVolumeChange(event.target.value)}
-          aria-label="効果音の音量"
-          aria-valuetext={`${soundVolume}%`}
-        />
+        <div className="audio-control-row">
+          <span className="audio-control-label">BGM</span>
+          <span className="audio-control-icon" aria-hidden="true">
+            {bgmVolume === 0 || selectedBgm === 'NONE'
+              ? '🔇'
+              : bgmVolume < 50
+                ? '🔉'
+                : '🔊'}
+          </span>
+          <input
+            className="audio-volume-slider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={bgmVolume}
+            onChange={(event) => handleBgmVolumeChange(event.target.value)}
+            aria-label="BGMの音量"
+            aria-valuetext={`${bgmVolume}%`}
+          />
+          <span className="audio-volume-value">{bgmVolume}%</span>
+        </div>
 
-        <span className="sound-volume-value">{soundVolume}%</span>
+        <label className="bgm-select-row">
+          <span>BGM選択</span>
+          <select
+            value={selectedBgm}
+            onChange={(event) => handleBgmTrackChange(event.target.value)}
+          >
+            {BGM_TRACKS.map((track) => (
+              <option key={track.id} value={track.id}>
+                {track.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
       <div
@@ -1379,22 +1658,9 @@ function App() {
             <p className="subtitle">数字で答えて、人狼を見つけろ。</p>
 
             <div className="menu">
-              <button
-                onClick={() => {
-                  setError('')
-                  setScreen('create')
-                }}
-              >
-                ルームを作る
-              </button>
+              <button onClick={handleEnterCreateScreen}>ルームを作る</button>
 
-              <button
-                className="secondary"
-                onClick={() => {
-                  setError('')
-                  setScreen('join')
-                }}
-              >
+              <button className="secondary" onClick={handleEnterJoinScreen}>
                 ルームに参加する
               </button>
 
@@ -1467,13 +1733,7 @@ function App() {
               </li>
             </ol>
 
-            <button
-              className="back"
-              onClick={() => {
-                setError('')
-                setScreen('home')
-              }}
-            >
+            <button className="back" onClick={handleBackToHome}>
               戻る
             </button>
           </div>
@@ -1497,13 +1757,7 @@ function App() {
 
             <button onClick={handleCreateRoom}>ルーム作成</button>
 
-            <button
-              className="back"
-              onClick={() => {
-                setError('')
-                setScreen('home')
-              }}
-            >
+            <button className="back" onClick={handleBackToHome}>
               戻る
             </button>
           </div>
@@ -1540,13 +1794,7 @@ function App() {
 
             <button onClick={handleJoinRoom}>参加する</button>
 
-            <button
-              className="back"
-              onClick={() => {
-                setError('')
-                setScreen('home')
-              }}
-            >
+            <button className="back" onClick={handleBackToHome}>
               戻る
             </button>
           </div>
