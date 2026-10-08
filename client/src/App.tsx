@@ -173,7 +173,7 @@ one pac, two pac, three pac, four
 見上げるくらいクソ長い階段
 
 毎朝登って鍛えたはずが
-海とフットサルで　あしがつる
+海とフットサルで　足が攣る
 「余裕だし」ってまだ強がる
 座って黙ってふくらはぎ伸ばす
 
@@ -409,7 +409,6 @@ function getSoundVolume() {
 const BGM_VOLUME_KEY = 'numberWerewolfBgmVolume'
 const BGM_TRACK_KEY = 'numberWerewolfBgmTrack'
 const DEFAULT_BGM_VOLUME = 35
-const DEFAULT_BGM_TRACK: BgmTrackId = 'BGM1'
 
 function getBgmVolume() {
   const savedValue = localStorage.getItem(BGM_VOLUME_KEY)
@@ -427,14 +426,8 @@ function getBgmVolume() {
   return Math.min(100, Math.max(0, savedVolume))
 }
 
-function getBgmTrack() {
-  const savedTrack = localStorage.getItem(BGM_TRACK_KEY) as BgmTrackId | null
-
-  if (savedTrack && BGM_TRACKS.some((track) => track.id === savedTrack)) {
-    return savedTrack
-  }
-
-  return DEFAULT_BGM_TRACK
+function getBgmTrack(): BgmTrackId {
+  return 'BGM1'
 }
 
 function playSound(path: string, baseVolume = 0.6) {
