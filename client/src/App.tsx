@@ -276,11 +276,15 @@ function App() {
   const [error, setError] = useState('')
   const [soundVolume, setSoundVolume] = useState(() => getSoundVolume())
   const [bgmVolume, setBgmVolume] = useState(() => getBgmVolume())
-  const [selectedBgm, setSelectedBgm] = useState<BgmTrackId>(() =>
-    getBgmTrack(),
-  )
-  const bgmAudioRef = useRef<HTMLAudioElement | null>(null)
+  const [selectedBgm, setSelectedBgm] = useState<BgmTrackId>(() => getBgmTrack())
+  const bgmContextRef = useRef<AudioContext | null>(null)
+  const bgmGainRef = useRef<GainNode | null>(null)
+  const bgmBuffersRef = useRef<Map<BgmTrackId, AudioBuffer>>(new Map())
+  const bgmSourceRef = useRef<AudioBufferSourceNode | null>(null)
+  const bgmCurrentTrackRef = useRef<BgmTrackId | null>(null)
   const bgmIsPlayingRef = useRef(false)
+  const bgmShouldPlayRef = useRef(false)
+  const bgmGenerationRef = useRef(0)
 
   // プレイヤー・ルーム
   const [username, setUsername] = useState('')
@@ -340,40 +344,90 @@ function App() {
     return BGM_TRACKS.find((track) => track.id === trackId) ?? BGM_TRACKS[0]
   }
 
-  function getOrCreateBgmAudio() {
-    if (!bgmAudioRef.current) {
-      const audio = new Audio()
-      audio.loop = false
-      audio.preload = 'auto'
-      bgmAudioRef.current = audio
+  function getOrCreateBgmContext() {
+    if (!bgmContextRef.current) {
+      const context = new AudioContext()
+      const gain = context.createGain()
+
+      gain.connect(context.destination)
+
+      bgmContextRef.current = context
+      bgmGainRef.current = gain
     }
 
-    return bgmAudioRef.current
+    return bgmContextRef.current
   }
 
-  function updateBgmAudioVolume(volume = bgmVolume, trackId = selectedBgm) {
-    const audio = bgmAudioRef.current
+  async function loadBgmBuffer(trackId: BgmTrackId) {
+    const cachedBuffer = bgmBuffersRef.current.get(trackId)
 
-    if (!audio) {
-      return
+    if (cachedBuffer) {
+      return cachedBuffer
     }
 
     const track = getSelectedBgm(trackId)
-    audio.volume = Math.min(1, Math.max(0, track.baseVolume * (volume / 100)))
+
+    if (!track.path) {
+      return null
+    }
+
+    const context = getOrCreateBgmContext()
+    const response = await fetch(track.path)
+
+    if (!response.ok) {
+      throw new Error(`BGMの読み込みに失敗しました: ${track.path}`)
+    }
+
+    const arrayBuffer = await response.arrayBuffer()
+    const audioBuffer = await context.decodeAudioData(arrayBuffer)
+
+    bgmBuffersRef.current.set(trackId, audioBuffer)
+
+    return audioBuffer
   }
 
-  function stopBgmAndReset() {
-    const audio = bgmAudioRef.current
+  function updateBgmAudioVolume(volume = bgmVolume) {
+    const gain = bgmGainRef.current
 
-    bgmIsPlayingRef.current = false
-
-    if (!audio) {
+    if (!gain) {
       return
     }
 
-    audio.onended = null
-    audio.pause()
-    audio.currentTime = 0
+    const currentTrackId = bgmCurrentTrackRef.current ?? selectedBgm
+    const track = getSelectedBgm(currentTrackId)
+    const nextVolume = Math.min(
+      1,
+      Math.max(0, track.baseVolume * (volume / 100)),
+    )
+
+    gain.gain.setValueAtTime(nextVolume, gain.context.currentTime)
+  }
+
+  function stopCurrentBgmSource() {
+    const source = bgmSourceRef.current
+
+    if (!source) {
+      return
+    }
+
+    source.onended = null
+
+    try {
+      source.stop()
+    } catch {
+      // すでに停止済みでもゲームは続行する
+    }
+
+    source.disconnect()
+    bgmSourceRef.current = null
+  }
+
+  function stopBgmAndReset() {
+    bgmGenerationRef.current += 1
+    bgmShouldPlayRef.current = false
+    bgmIsPlayingRef.current = false
+    bgmCurrentTrackRef.current = null
+    stopCurrentBgmSource()
   }
 
   function getNextBgmTrackId(currentTrackId: BgmTrackId) {
@@ -393,6 +447,84 @@ function App() {
     return PLAYABLE_BGM_TRACKS[nextIndex].id
   }
 
+  async function playBgmTrack(
+    trackId: BgmTrackId,
+    generation: number,
+  ): Promise<void> {
+    if (!bgmShouldPlayRef.current || generation !== bgmGenerationRef.current) {
+      return
+    }
+
+    const track = getSelectedBgm(trackId)
+
+    if (!track.path) {
+      stopBgmAndReset()
+      return
+    }
+
+    try {
+      const context = getOrCreateBgmContext()
+
+      if (context.state !== 'running') {
+        await context.resume()
+      }
+
+      const audioBuffer = await loadBgmBuffer(trackId)
+
+      if (
+        !audioBuffer ||
+        !bgmShouldPlayRef.current ||
+        generation !== bgmGenerationRef.current
+      ) {
+        return
+      }
+
+      stopCurrentBgmSource()
+
+      const source = context.createBufferSource()
+      const gain = bgmGainRef.current
+
+      if (!gain) {
+        return
+      }
+
+      source.buffer = audioBuffer
+      source.connect(gain)
+
+      bgmSourceRef.current = source
+      bgmCurrentTrackRef.current = trackId
+      bgmIsPlayingRef.current = true
+      updateBgmAudioVolume(getBgmVolume())
+
+      source.onended = () => {
+        if (
+          source !== bgmSourceRef.current ||
+          !bgmShouldPlayRef.current ||
+          generation !== bgmGenerationRef.current
+        ) {
+          return
+        }
+
+        bgmSourceRef.current = null
+
+        const nextTrackId = getNextBgmTrackId(trackId)
+
+        if (!nextTrackId) {
+          bgmIsPlayingRef.current = false
+          bgmCurrentTrackRef.current = null
+          return
+        }
+
+        void playBgmTrack(nextTrackId, generation)
+      }
+
+      source.start(0)
+    } catch (error) {
+      console.warn('BGMの再生に失敗しました:', error)
+      bgmIsPlayingRef.current = false
+    }
+  }
+
   function startBgmFromBeginning(trackId = selectedBgm) {
     const track = getSelectedBgm(trackId)
 
@@ -401,32 +533,15 @@ function App() {
       return
     }
 
-    const audio = getOrCreateBgmAudio()
+    stopCurrentBgmSource()
 
-    audio.onended = null
-    audio.pause()
-    audio.src = track.path
-    audio.currentTime = 0
-    audio.loop = false
-    updateBgmAudioVolume(getBgmVolume(), trackId)
-    bgmIsPlayingRef.current = true
+    bgmGenerationRef.current += 1
+    const generation = bgmGenerationRef.current
 
-    audio.onended = () => {
-      const nextTrackId = getNextBgmTrackId(trackId)
+    bgmShouldPlayRef.current = true
+    bgmCurrentTrackRef.current = trackId
 
-      if (!nextTrackId) {
-        bgmIsPlayingRef.current = false
-        return
-      }
-
-      setSelectedBgm(nextTrackId)
-      localStorage.setItem(BGM_TRACK_KEY, nextTrackId)
-      startBgmFromBeginning(nextTrackId)
-    }
-
-    void audio.play().catch(() => {
-      bgmIsPlayingRef.current = false
-    })
+    void playBgmTrack(trackId, generation)
   }
 
   // Socket.IOイベント
@@ -951,7 +1066,8 @@ function App() {
   // 画面を閉じたときにBGMを停止
   useEffect(() => {
     return () => {
-      bgmAudioRef.current?.pause()
+      stopCurrentBgmSource()
+      void bgmContextRef.current?.close()
     }
   }, [])
 
@@ -1062,14 +1178,7 @@ function App() {
     setBgmVolume(nextVolume)
     localStorage.setItem(BGM_VOLUME_KEY, String(nextVolume))
 
-    const audio = bgmAudioRef.current
-    if (audio) {
-      const track = getSelectedBgm()
-      audio.volume = Math.min(
-        1,
-        Math.max(0, track.baseVolume * (nextVolume / 100)),
-      )
-    }
+    updateBgmAudioVolume(nextVolume)
   }
 
   function handleBgmTrackChange(value: string) {
@@ -1658,9 +1767,16 @@ function App() {
             <p className="subtitle">数字で答えて、人狼を見つけろ。</p>
 
             <div className="menu">
-              <button onClick={handleEnterCreateScreen}>ルームを作る</button>
+              <button
+                onClick={handleEnterCreateScreen}
+              >
+                ルームを作る
+              </button>
 
-              <button className="secondary" onClick={handleEnterJoinScreen}>
+              <button
+                className="secondary"
+                onClick={handleEnterJoinScreen}
+              >
                 ルームに参加する
               </button>
 
@@ -1733,7 +1849,10 @@ function App() {
               </li>
             </ol>
 
-            <button className="back" onClick={handleBackToHome}>
+            <button
+              className="back"
+              onClick={handleBackToHome}
+            >
               戻る
             </button>
           </div>
@@ -1757,7 +1876,10 @@ function App() {
 
             <button onClick={handleCreateRoom}>ルーム作成</button>
 
-            <button className="back" onClick={handleBackToHome}>
+            <button
+              className="back"
+              onClick={handleBackToHome}
+            >
               戻る
             </button>
           </div>
@@ -1794,7 +1916,10 @@ function App() {
 
             <button onClick={handleJoinRoom}>参加する</button>
 
-            <button className="back" onClick={handleBackToHome}>
+            <button
+              className="back"
+              onClick={handleBackToHome}
+            >
               戻る
             </button>
           </div>
