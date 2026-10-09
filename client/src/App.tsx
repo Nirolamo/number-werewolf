@@ -118,7 +118,7 @@ LINE返さない　既読もつかない
 でもタバコの銘柄は間違えない
 
 Peace Light 　口にくわえ　火をつける
-Bling-Bling　めじるしだらけ IQOS　lil HYBRID　
+Bling-Bling　めじるしだらけ IQOS lil HYBRID　
 巻くのは女とタバコだけ
 煙だけのこして夜に消える　
 
@@ -137,7 +137,7 @@ Bling-Bling　めじるしだらけ IQOS　lil HYBRID　
 朝が来るまで八王子で騒ぐ
 グラスがあけばまた注ぐ
 
-one pac, two pac, three pac, four
+1pac 2pac 3pac 4
 一本　二本　飲み干す bottle
 空になるたび瓶を掲げる
 頭の上で逆さにして見せる
