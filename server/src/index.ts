@@ -16,6 +16,7 @@ const MIN_PLAYERS = 3
 const ANSWER_TIME_MS = 30 * 1000
 const VOTE_TIME_MS = 15 * 1000
 const DISCONNECT_GRACE_MS = 15 * 1000
+const DISCUSSION_SKIP_GUARD_MS = 1500
 
 const app = express()
 const httpServer = createServer(app)
@@ -163,6 +164,8 @@ type Room = {
   answerEndsAt?: number
   voteEndsAt?: number
   discussionEndsAt?: number
+  discussionStartedAt?: number
+  discussionTimerGeneration: number
   discussionSeconds: number | null
 
   customTopics: CustomTopic[]
@@ -1245,7 +1248,12 @@ function startVoteTimer(room: Room) {
 }
 
 function startVoting(room: Room, wasSkipped = false) {
+  // 以前の話し合いタイマーが後から発火しないように無効化する
+  room.discussionTimerGeneration += 1
+
   room.phase = 'VOTING'
+  room.discussionStartedAt = undefined
+  room.discussionEndsAt = undefined
   room.votes = {}
   room.voteDrafts = {}
 
@@ -1268,6 +1276,7 @@ function finishAnswering(room: Room) {
   room.phase = 'DISCUSSION'
   room.answerEndsAt = undefined
   room.skipVotes = []
+  room.discussionStartedAt = Date.now()
 
   startDiscussionTimer(room)
 
@@ -1325,6 +1334,11 @@ function startAnswerTimer(room: Room) {
 }
 
 function startDiscussionTimer(room: Room) {
+  // 新しい話し合いを開始するたび世代番号を進める。
+  // 前ゲームで残った setTimeout は世代番号が一致しないため無視される。
+  room.discussionTimerGeneration += 1
+  const timerGeneration = room.discussionTimerGeneration
+
   if (room.discussionSeconds === null) {
     room.discussionEndsAt = undefined
     return
@@ -1338,6 +1352,11 @@ function startDiscussionTimer(room: Room) {
     const currentRoom = rooms.get(room.code)
 
     if (!currentRoom) {
+      return
+    }
+
+    // このタイマーより後に別の話し合いが始まっていたら何もしない
+    if (currentRoom.discussionTimerGeneration !== timerGeneration) {
       return
     }
 
@@ -1569,6 +1588,7 @@ io.on('connection', (socket) => {
       revoteCandidates: [],
 
       // 初期値3分
+      discussionTimerGeneration: 0,
       discussionSeconds: 180,
 
       customTopics: [],
@@ -2323,6 +2343,16 @@ io.on('connection', (socket) => {
       return
     }
 
+    const discussionStartedAt = room.discussionStartedAt ?? 0
+
+    if (Date.now() - discussionStartedAt < DISCUSSION_SKIP_GUARD_MS) {
+      callback({
+        ok: false,
+        message: '話し合い開始直後はスキップできません',
+      })
+      return
+    }
+
     const isMember = room.players.some((player) => player.id === socket.id)
 
     if (!isMember) {
@@ -2643,6 +2673,9 @@ io.on('connection', (socket) => {
     room.skipVotes = []
     room.revoteCandidates = []
     room.gameResult = undefined
+    room.discussionTimerGeneration += 1
+    room.discussionEndsAt = undefined
+    room.discussionStartedAt = undefined
     startAnswerTimer(room)
 
     for (const player of room.players) {
@@ -3059,6 +3092,8 @@ io.on('connection', (socket) => {
 
     room.voteEndsAt = undefined
     room.discussionEndsAt = undefined
+    room.discussionStartedAt = undefined
+    room.discussionTimerGeneration += 1
 
     io.to(room.code).emit('backToLobby', {
       players: room.players,
