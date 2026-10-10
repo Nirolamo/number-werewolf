@@ -222,7 +222,7 @@ boom boom　うなるベースがブームになる
 クソ長い階段　
 山田
 みなみだいら　
-八王子のかしら
+八王子のカシラ
 
 Peace Light
 IQOS
@@ -263,8 +263,7 @@ LINEも忘れる
 それでもカシラ
 
 しーま
-今日も変わらない
-`
+今日も変わらない`
 
 type Answer =
   | {
@@ -438,17 +437,22 @@ function App() {
   const [error, setError] = useState('')
   const [soundVolume, setSoundVolume] = useState(() => getSoundVolume())
   const [bgmVolume, setBgmVolume] = useState(() => getBgmVolume())
-  const [selectedBgm, setSelectedBgm] = useState<BgmTrackId>(() => getBgmTrack())
+  const [selectedBgm, setSelectedBgm] = useState<BgmTrackId>(() =>
+    getBgmTrack(),
+  )
   const [playingBgm, setPlayingBgm] = useState<BgmTrackId | null>(null)
   const [showLyrics, setShowLyrics] = useState(false)
   const bgmContextRef = useRef<AudioContext | null>(null)
   const bgmGainRef = useRef<GainNode | null>(null)
   const bgmBuffersRef = useRef<Map<BgmTrackId, AudioBuffer>>(new Map())
-  const bgmSourceRef = useRef<AudioBufferSourceNode | null>(null)
+  const bgmScheduledNodesRef = useRef<
+    Array<{ source: AudioBufferSourceNode; gain: GainNode }>
+  >([])
   const bgmCurrentTrackRef = useRef<BgmTrackId | null>(null)
   const bgmIsPlayingRef = useRef(false)
   const bgmShouldPlayRef = useRef(false)
-  const bgmGenerationRef = useRef(0)
+  const bgmStartRequestRef = useRef(0)
+  const bgmNowPlayingTimerRef = useRef<number | null>(null)
 
   // プレイヤー・ルーム
   const [username, setUsername] = useState('')
@@ -557,144 +561,84 @@ function App() {
       return
     }
 
-    const currentTrackId = bgmCurrentTrackRef.current ?? selectedBgm
-    const track = getSelectedBgm(currentTrackId)
-    const nextVolume = Math.min(
-      1,
-      Math.max(0, track.baseVolume * (volume / 100)),
-    )
+    const nextVolume = Math.min(1, Math.max(0, volume / 100))
 
+    gain.gain.cancelScheduledValues(gain.context.currentTime)
     gain.gain.setValueAtTime(nextVolume, gain.context.currentTime)
   }
 
-  function stopCurrentBgmSource() {
-    const source = bgmSourceRef.current
-
-    if (!source) {
+  function clearBgmNowPlayingTimer() {
+    if (bgmNowPlayingTimerRef.current === null) {
       return
     }
 
-    source.onended = null
+    window.clearInterval(bgmNowPlayingTimerRef.current)
+    bgmNowPlayingTimerRef.current = null
+  }
 
-    try {
-      source.stop()
-    } catch {
-      // すでに停止済みでもゲームは続行する
+  function stopScheduledBgmNodes() {
+    clearBgmNowPlayingTimer()
+
+    for (const { source, gain } of bgmScheduledNodesRef.current) {
+      source.onended = null
+
+      try {
+        source.stop()
+      } catch {
+        // すでに終了済み・停止済みでもゲームは続行する
+      }
+
+      try {
+        source.disconnect()
+      } catch {
+        // すでに切断済みでもゲームは続行する
+      }
+
+      try {
+        gain.disconnect()
+      } catch {
+        // すでに切断済みでもゲームは続行する
+      }
     }
 
-    source.disconnect()
-    bgmSourceRef.current = null
+    bgmScheduledNodesRef.current = []
   }
 
   function stopBgmAndReset() {
-    bgmGenerationRef.current += 1
+    bgmStartRequestRef.current += 1
     bgmShouldPlayRef.current = false
     bgmIsPlayingRef.current = false
     bgmCurrentTrackRef.current = null
     setPlayingBgm(null)
     setShowLyrics(false)
-    stopCurrentBgmSource()
+    stopScheduledBgmNodes()
   }
 
-  function getNextBgmTrackId(currentTrackId: BgmTrackId) {
+  function getOrderedPlayableBgmTracks(startTrackId: BgmTrackId) {
     if (PLAYABLE_BGM_TRACKS.length === 0) {
-      return null
+      return []
     }
 
-    const currentIndex = PLAYABLE_BGM_TRACKS.findIndex(
-      (track) => track.id === currentTrackId,
+    const startIndex = PLAYABLE_BGM_TRACKS.findIndex(
+      (track) => track.id === startTrackId,
     )
 
-    if (currentIndex === -1) {
-      return PLAYABLE_BGM_TRACKS[0].id
-    }
+    const normalizedStartIndex = startIndex === -1 ? 0 : startIndex
 
-    const nextIndex = (currentIndex + 1) % PLAYABLE_BGM_TRACKS.length
-    return PLAYABLE_BGM_TRACKS[nextIndex].id
+    return [
+      ...PLAYABLE_BGM_TRACKS.slice(normalizedStartIndex),
+      ...PLAYABLE_BGM_TRACKS.slice(0, normalizedStartIndex),
+    ]
   }
 
-  async function playBgmTrack(
-    trackId: BgmTrackId,
-    generation: number,
-  ): Promise<void> {
-    if (!bgmShouldPlayRef.current || generation !== bgmGenerationRef.current) {
+  function setNowPlayingTrack(trackId: BgmTrackId | null) {
+    if (bgmCurrentTrackRef.current === trackId) {
       return
     }
 
-    const track = getSelectedBgm(trackId)
-
-    if (!track.path) {
-      stopBgmAndReset()
-      return
-    }
-
-    try {
-      const context = getOrCreateBgmContext()
-
-      if (context.state !== 'running') {
-        await context.resume()
-      }
-
-      const audioBuffer = await loadBgmBuffer(trackId)
-
-      if (
-        !audioBuffer ||
-        !bgmShouldPlayRef.current ||
-        generation !== bgmGenerationRef.current
-      ) {
-        return
-      }
-
-      stopCurrentBgmSource()
-
-      const source = context.createBufferSource()
-      const gain = bgmGainRef.current
-
-      if (!gain) {
-        return
-      }
-
-      source.buffer = audioBuffer
-      source.connect(gain)
-
-      bgmSourceRef.current = source
-      bgmCurrentTrackRef.current = trackId
-      bgmIsPlayingRef.current = true
-      setPlayingBgm(trackId)
-      setShowLyrics((current) => (trackId === 'SHIMA' ? current : false))
-      updateBgmAudioVolume(getBgmVolume())
-
-      source.onended = () => {
-        if (
-          source !== bgmSourceRef.current ||
-          !bgmShouldPlayRef.current ||
-          generation !== bgmGenerationRef.current
-        ) {
-          return
-        }
-
-        bgmSourceRef.current = null
-
-        const nextTrackId = getNextBgmTrackId(trackId)
-
-        if (!nextTrackId) {
-          bgmIsPlayingRef.current = false
-          bgmCurrentTrackRef.current = null
-          setPlayingBgm(null)
-          setShowLyrics(false)
-          return
-        }
-
-        void playBgmTrack(nextTrackId, generation)
-      }
-
-      source.start(0)
-    } catch (error) {
-      console.warn('BGMの再生に失敗しました:', error)
-      bgmIsPlayingRef.current = false
-      setPlayingBgm(null)
-      setShowLyrics(false)
-    }
+    bgmCurrentTrackRef.current = trackId
+    setPlayingBgm(trackId)
+    setShowLyrics((current) => (trackId === 'SHIMA' ? current : false))
   }
 
   function startBgmFromBeginning(trackId = selectedBgm) {
@@ -705,15 +649,213 @@ function App() {
       return
     }
 
-    stopCurrentBgmSource()
+    const orderedTracks = getOrderedPlayableBgmTracks(trackId)
 
-    bgmGenerationRef.current += 1
-    const generation = bgmGenerationRef.current
+    if (orderedTracks.length === 0) {
+      stopBgmAndReset()
+      return
+    }
+
+    bgmStartRequestRef.current += 1
+    const requestId = bgmStartRequestRef.current
 
     bgmShouldPlayRef.current = true
-    bgmCurrentTrackRef.current = trackId
+    stopScheduledBgmNodes()
 
-    void playBgmTrack(trackId, generation)
+    const context = getOrCreateBgmContext()
+
+    // この関数は「ルームを作る / 参加する」などのユーザー操作からも呼ばれる。
+    // その操作中に AudioContext を起こしておくことで、その後の曲境界では
+    // resume() や play() を呼び直さずに済む。
+    const resumePromise =
+      context.state === 'running' ? Promise.resolve() : context.resume()
+
+    void (async () => {
+      try {
+        const loadedTracks = await Promise.all(
+          orderedTracks.map(async (item) => {
+            const buffer = await loadBgmBuffer(item.id)
+
+            if (!buffer) {
+              throw new Error(`BGMバッファを取得できませんでした: ${item.id}`)
+            }
+
+            return {
+              track: item,
+              buffer,
+            }
+          }),
+        )
+
+        await resumePromise
+
+        if (
+          !bgmShouldPlayRef.current ||
+          requestId !== bgmStartRequestRef.current
+        ) {
+          return
+        }
+
+        const masterGain = bgmGainRef.current
+
+        if (!masterGain) {
+          return
+        }
+
+        // マスター音量はプレイリスト全体で1個だけ。
+        // 曲が変わってもGainNodeを作り直さないので、0%ならずっと0%のまま。
+        updateBgmAudioVolume(getBgmVolume())
+
+        const segments: Array<{
+          id: BgmTrackId
+          start: number
+          end: number
+        }> = []
+
+        let cycleDuration = 0
+
+        for (const { track: loadedTrack, buffer } of loadedTracks) {
+          const start = cycleDuration
+          const end = start + buffer.duration
+
+          segments.push({
+            id: loadedTrack.id,
+            start,
+            end,
+          })
+
+          cycleDuration = end
+        }
+
+        if (cycleDuration <= 0) {
+          return
+        }
+
+        // 曲の終端で次曲を再生開始するのではなく、先の曲まで最初に予約しておく。
+        // これでブラウザの自動再生制限に曲境界で引っかからない。
+        const playlistStartTime = context.currentTime + 0.08
+        const scheduleDurationSeconds = 8 * 60 * 60
+        const scheduledNodes: Array<{
+          source: AudioBufferSourceNode
+          gain: GainNode
+        }> = []
+
+        let cycleOffset = 0
+
+        while (cycleOffset < scheduleDurationSeconds) {
+          for (const { track: loadedTrack, buffer } of loadedTracks) {
+            const source = context.createBufferSource()
+            const trackGain = context.createGain()
+
+            source.buffer = buffer
+            trackGain.gain.value = loadedTrack.baseVolume
+
+            source.connect(trackGain)
+            trackGain.connect(masterGain)
+
+            source.onended = () => {
+              try {
+                source.disconnect()
+              } catch {
+                // すでに切断済みでも問題なし
+              }
+
+              try {
+                trackGain.disconnect()
+              } catch {
+                // すでに切断済みでも問題なし
+              }
+            }
+
+            source.start(playlistStartTime + cycleOffset)
+
+            scheduledNodes.push({
+              source,
+              gain: trackGain,
+            })
+
+            cycleOffset += buffer.duration
+          }
+        }
+
+        if (
+          !bgmShouldPlayRef.current ||
+          requestId !== bgmStartRequestRef.current
+        ) {
+          for (const { source, gain } of scheduledNodes) {
+            source.onended = null
+
+            try {
+              source.stop()
+            } catch {
+              // すでに終了していても問題なし
+            }
+
+            try {
+              source.disconnect()
+              gain.disconnect()
+            } catch {
+              // すでに切断済みでも問題なし
+            }
+          }
+
+          return
+        }
+
+        bgmScheduledNodesRef.current = scheduledNodes
+        bgmIsPlayingRef.current = true
+        setNowPlayingTrack(orderedTracks[0].id)
+
+        clearBgmNowPlayingTimer()
+
+        const updateNowPlaying = () => {
+          if (
+            !bgmShouldPlayRef.current ||
+            requestId !== bgmStartRequestRef.current
+          ) {
+            return
+          }
+
+          const elapsed = context.currentTime - playlistStartTime
+
+          if (elapsed < 0) {
+            return
+          }
+
+          const positionInCycle =
+            ((elapsed % cycleDuration) + cycleDuration) % cycleDuration
+
+          const segment =
+            segments.find(
+              (item, index) =>
+                positionInCycle >= item.start &&
+                (positionInCycle < item.end ||
+                  (index === segments.length - 1 &&
+                    positionInCycle <= item.end)),
+            ) ?? segments[0]
+
+          setNowPlayingTrack(segment.id)
+        }
+
+        updateNowPlaying()
+
+        bgmNowPlayingTimerRef.current = window.setInterval(
+          updateNowPlaying,
+          250,
+        )
+      } catch (error) {
+        console.warn('BGMの再生に失敗しました:', error)
+
+        if (requestId !== bgmStartRequestRef.current) {
+          return
+        }
+
+        bgmIsPlayingRef.current = false
+        bgmCurrentTrackRef.current = null
+        setPlayingBgm(null)
+        setShowLyrics(false)
+      }
+    })()
   }
 
   // Socket.IOイベント
@@ -1238,7 +1380,7 @@ function App() {
   // 画面を閉じたときにBGMを停止
   useEffect(() => {
     return () => {
-      stopCurrentBgmSource()
+      stopScheduledBgmNodes()
       void bgmContextRef.current?.close()
     }
   }, [])
@@ -1351,6 +1493,14 @@ function App() {
     localStorage.setItem(BGM_VOLUME_KEY, String(nextVolume))
 
     updateBgmAudioVolume(nextVolume)
+
+    // 端末側でAudioContextが一時停止していた場合も、
+    // スライダー操作そのものを使って安全に再開する。
+    if (nextVolume > 0 && bgmContextRef.current?.state === 'suspended') {
+      void bgmContextRef.current.resume().catch(() => {
+        // 再開できなくてもゲーム進行には影響させない
+      })
+    }
   }
 
   function handleBgmTrackChange(value: string) {
@@ -1976,16 +2126,9 @@ function App() {
             <p className="subtitle">数字で答えて、人狼を見つけろ。</p>
 
             <div className="menu">
-              <button
-                onClick={handleEnterCreateScreen}
-              >
-                ルームを作る
-              </button>
+              <button onClick={handleEnterCreateScreen}>ルームを作る</button>
 
-              <button
-                className="secondary"
-                onClick={handleEnterJoinScreen}
-              >
+              <button className="secondary" onClick={handleEnterJoinScreen}>
                 ルームに参加する
               </button>
 
@@ -2058,10 +2201,7 @@ function App() {
               </li>
             </ol>
 
-            <button
-              className="back"
-              onClick={handleBackToHome}
-            >
+            <button className="back" onClick={handleBackToHome}>
               戻る
             </button>
           </div>
@@ -2085,10 +2225,7 @@ function App() {
 
             <button onClick={handleCreateRoom}>ルーム作成</button>
 
-            <button
-              className="back"
-              onClick={handleBackToHome}
-            >
+            <button className="back" onClick={handleBackToHome}>
               戻る
             </button>
           </div>
@@ -2125,10 +2262,7 @@ function App() {
 
             <button onClick={handleJoinRoom}>参加する</button>
 
-            <button
-              className="back"
-              onClick={handleBackToHome}
-            >
+            <button className="back" onClick={handleBackToHome}>
               戻る
             </button>
           </div>
