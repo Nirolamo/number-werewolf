@@ -118,6 +118,19 @@ type VoteCount = {
   voters: string[]
 }
 
+type PlayerSessionStats = {
+  playerId: string
+  playerName: string
+  totalWins: number
+  totalGames: number
+  werewolfWins: number
+  werewolfGames: number
+  citizenWins: number
+  citizenGames: number
+}
+
+type StoredPlayerStats = Omit<PlayerSessionStats, 'playerId' | 'playerName'>
+
 type GameResult = {
   executedPlayer: {
     id: string
@@ -130,6 +143,7 @@ type GameResult = {
   }
   winner: 'CITIZEN' | 'WEREWOLF'
   voteCounts: VoteCount[]
+  playerStats: PlayerSessionStats[]
 }
 
 type Phase =
@@ -145,6 +159,7 @@ type Room = {
   hostId: string
   players: Player[]
   playerTokens: Record<string, string>
+  playerStats: Record<string, StoredPlayerStats>
   phase: Phase
 
   werewolfId?: string
@@ -180,6 +195,44 @@ type Room = {
 
 const rooms = new Map<string, Room>()
 const disconnectTimers = new Map<string, ReturnType<typeof setTimeout>>()
+
+function createEmptyPlayerStats(): StoredPlayerStats {
+  return {
+    totalWins: 0,
+    totalGames: 0,
+    werewolfWins: 0,
+    werewolfGames: 0,
+    citizenWins: 0,
+    citizenGames: 0,
+  }
+}
+
+function getOrCreatePlayerStats(room: Room, playerId: string) {
+  const playerToken = room.playerTokens[playerId]
+
+  if (!playerToken) {
+    return null
+  }
+
+  if (!room.playerStats[playerToken]) {
+    room.playerStats[playerToken] = createEmptyPlayerStats()
+  }
+
+  return room.playerStats[playerToken]
+}
+
+function buildPlayerStatsView(room: Room): PlayerSessionStats[] {
+  return room.players.map((player) => {
+    const stats =
+      getOrCreatePlayerStats(room, player.id) ?? createEmptyPlayerStats()
+
+    return {
+      playerId: player.id,
+      playerName: player.name,
+      ...stats,
+    }
+  })
+}
 
 // =========================
 // プリセットお題
@@ -1400,6 +1453,38 @@ function finishGame(
   }
 
   const executedIsWerewolf = executedPlayer.id === room.werewolfId
+  const winner: 'CITIZEN' | 'WEREWOLF' = executedIsWerewolf
+    ? 'CITIZEN'
+    : 'WEREWOLF'
+
+  for (const player of room.players) {
+    const stats = getOrCreatePlayerStats(room, player.id)
+
+    if (!stats) {
+      continue
+    }
+
+    stats.totalGames += 1
+
+    const playerRole: 'CITIZEN' | 'WEREWOLF' =
+      player.id === room.werewolfId ? 'WEREWOLF' : 'CITIZEN'
+
+    if (playerRole === 'WEREWOLF') {
+      stats.werewolfGames += 1
+
+      if (winner === 'WEREWOLF') {
+        stats.werewolfWins += 1
+        stats.totalWins += 1
+      }
+    } else {
+      stats.citizenGames += 1
+
+      if (winner === 'CITIZEN') {
+        stats.citizenWins += 1
+        stats.totalWins += 1
+      }
+    }
+  }
 
   const gameResult: GameResult = {
     executedPlayer: {
@@ -1414,7 +1499,7 @@ function finishGame(
       name: werewolf.name,
     },
 
-    winner: executedIsWerewolf ? 'CITIZEN' : 'WEREWOLF',
+    winner,
 
     voteCounts: room.players.map((player) => ({
       playerId: player.id,
@@ -1424,6 +1509,8 @@ function finishGame(
         .filter((voter) => room.votes[voter.id] === player.id)
         .map((voter) => voter.name),
     })),
+
+    playerStats: buildPlayerStatsView(room),
   }
 
   room.gameResult = gameResult
@@ -1575,6 +1662,10 @@ io.on('connection', (socket) => {
         [socket.id]: playerToken,
       },
 
+      playerStats: {
+        [playerToken]: createEmptyPlayerStats(),
+      },
+
       phase: 'LOBBY',
 
       answers: {},
@@ -1701,6 +1792,10 @@ io.on('connection', (socket) => {
     room.players.push(player)
 
     room.playerTokens[socket.id] = playerToken
+
+    if (!room.playerStats[playerToken]) {
+      room.playerStats[playerToken] = createEmptyPlayerStats()
+    }
 
     socket.join(roomCode)
 
@@ -2029,6 +2124,15 @@ io.on('connection', (socket) => {
       }
 
       room.gameResult.voteCounts = room.gameResult.voteCounts.map((item) =>
+        item.playerId === oldSocketId
+          ? {
+              ...item,
+              playerId: newSocketId,
+            }
+          : item,
+      )
+
+      room.gameResult.playerStats = room.gameResult.playerStats.map((item) =>
         item.playerId === oldSocketId
           ? {
               ...item,
