@@ -97,66 +97,7 @@ const PLAYABLE_BGM_TRACKS = BGM_TRACKS.filter(
   (track): track is BgmTrack & { path: string } => track.path !== null,
 )
 
-const SHIMA_LYRICS = `しーま　またLINE返さない
-しーま　記念日覚えてない
-しーま　迎え行っても起きてない
-「今行く」って悪びれてない
-
-しーま　触れたら火傷じゃない？
-しーま　恋なら自然消滅
-しーま　八王子のカシラ
-最寄りは山田　夜なら終わらない
-
-朝に弱い　待ち合わせにもいない
-迎えに行ってもまだ起きてない
-「あと5分」がまた30分
-しーまの時計だけ違う時刻
-
-LINE返さない　既読もつかない
-ついたと思えば 「今起きた」
-記念日なんて覚えちゃいない
-でもタバコの銘柄は間違えない
-
-Bling-Bling　めじるしだらけのIQOS
-光る手元　闇夜を照らす
-巻くのは女とタバコだけ
-煙を残して　また夜をまたぐ
-
-ラップ上等　ラップ上等
-元カノちかこでも　ラブ上等
-終電間際　ホームでディープキス
-狙いすました第三の証言
-
-昨日の約束　今日にはしらない
-火がつく早々　冷めたら撤退
-追われりゃ逃走　こっちから行かない
-自然消滅　これしーまのSTYLE
-
-酒が入ったら　調子も上がる
-夜を使い果たして　また、騒ぐ
-今夜はブギーバック　八王子の夜
-空いたグラスなら　すぐに注ぐ
-
-one pac, two pac, three pac, four
-一本　二本　飲み干す bottle
-からになるたび瓶をかかげる
-頭の上で逆さにして見せる
-
-南のドルフィンに溺れ
-雪積もる真冬の夜更け
-やらかしたって　送ってくるなよ
-LINEは消しとけ　証拠が残るだけ
-
-Teenage vibe　ずっと持ってる
-ディスコでつながる　アジアの girls
-夜な夜な game　八王子からworld
-声からフェロモン　マイク越しにdelivery
-
-朝起きれないのに今夜は all night
-明日の集合？　問題ない
-「あと5分」ってまた吐く white lie
-30分後でも悪びれない
-
+const SHIMA_LYRICS = `[Hook]
 しーま　またLINE返さない
 しーま　記念日覚えてない
 しーま　迎え行っても起きてない
@@ -167,62 +108,132 @@ Teenage vibe　ずっと持ってる
 しーま　八王子のカシラ
 最寄りは山田　夜なら終わらない
 
+[Verse 1A]
+朝に弱い　待ち合わせにもいない
+迎えに行ってもまだ起きてない
+「あと5分」がまた30分
+しーまの時計だけ違う時刻
+
+LINE返さない　既読もつかない
+ついたと思えば今度は返さない
+記念日なんて覚えちゃいない
+でもタバコの銘柄は間違えない
+
+[Verse 1B]
+ピースライト 　口にくわえ　火をつける
+IQOS　lil HYBRID　Bling-Bling　めじるしだらけ
+煙だけ残して夜に消える　巻くのは女とタバコだけ
+
+ラップ上等　元カノちかこでもラブ上等
+調布駅　終電前　
+人であふれたホームでディープキス
+狙いすました第三の証言
+
+[Verse 1C]
+昨日の約束　今日には知らない
+恋なら熱いが冷めるのも早い
+自然消滅　得意のフェード
+追われてるうちがしーまのペース
+
+酒が入ったら調子が上がる
+夜がふかくなるほど声も上がる
+グラスがあけばまた次を注ぐ
+夜を使い果たして　騒ぐ八王子
+
+[Verse 1D]
+one pac, two pac, three pac, four
+一本　二本　飲み干す bottle
+からになるたび瓶を掲げる
+頭の上で逆さにして見せる
+
+南のドルフィンに溺れ
+八王子南口　寒い中熱い夜は続いて
+雪が積もる中やらかし
+LINEはけ消しとけよ言ったのにな
+
+[Verse 1E]
+超高速道路乗った whip
+山田に戻る頃には midnight
+気づけば外には朝の光
+昨日の予定なんてもう知らない
+
+朝起きれないのに今夜は all night
+明日の集合？　まあなんとかなる
+「あと5分」ってまた言うだろ
+それでも今日も悪びれない顔
+
+[Hook]
+しーま　またLINE返さない
+しーま　記念日覚えてない
+しーま　迎え行っても起きてない
+「今行く」って悪びれてない
+
+しーま　触れたら火傷じゃない？
+しーま　恋なら自然消滅
+しーま　八王子のカシラ
+最寄りは山田　夜なら終わらない
+
+[Verse 2A]
 南平高校　卒業
 ここはノーチャイム　それが日常
-グノーティ・セアウトン　汝自身を知れ
+校門入ったその先に待つ
 見上げるくらいクソ長い階段
 
 毎朝登って鍛えたはずが
-海でもフットサルでも足つるな
-右も左も一気にくるべ
-おやじが心配する　oh…
+海とフットサルで　両足がつる
+「余裕だし」ってまだ強がる
+おやじに心配さてやがる
 
-街から国へ　八王子side
+[Verse 2B]
+街から国へ　八王子の中
 山田がホーム　真夜中 drive
-ストリートビューに残るその style
-Google Mapまで　しーまの profile
+遅刻はするし朝には弱い
+でも夜になったら誰よりも長い男
 
-「待ってたーぜ しーま」
-今日の集合　しーまだけ最後
-「だからちょまって」　山田サイド
-こいつの5分は　体感ワイド
+家の近くには磯沼ファーム
+窓開けた瞬間　漂うフレーバー
+八王子の風に乗ってくる匂い
+しーまは今日も気にせず素通り
 
-八王子生まれ　HIP HOP育ち
-悪ノリするやつ　だいたいトモダチ
-山田を抜けて　ユーロードまで
-すぐる曰く　八王子のカシラ
+[Verse 2C]
+八王子生まれ
+HIP HOP育ち
+悪ノリするやつ
+だいたい友達
 
-レペゼン八王子　夜なら止まらない
-集合時間は　30分前
-名前はしーま　覚えときな
-これが俺らの　しーまイズム
+すぐる曰く八王子のカシラ
+レペゼン　ユーロード
+これがしーまイズム
 
+[Verse 3A]
+八王子の南口　甘い甘い、ミルク＆ハニー
+帰って寝たなら昼まで起きない
 夏になったら行きたいサマラン
 しーまが愛するサマーランド
+
 波のプール　ウォータースライダー
-ヤバくなれるのは「しーま」！
+そこじゃ誰よりはしゃぐ八王子のかしら
+ヤバくなれるのは、しーま　
+「濡れたまんまでイッちゃって！！」
 
-トンネル抜けたら　サマラン制圧
-水着のねーちゃん　視線を強奪
-多摩川で恋してみたい
-あきる野　八王子つないでる
-
+[Verse 3B]
 Peace Light　煙が揺れてる
 窓の外　街灯が流れてる
-ブンブン　うなるベースがブームになる
-八王子なら　ローもノーカット
+boom boom　うなるベースが癖になる
+低音で震える夜の八王子
 
 山田　八王子　ナンペイ
-場所が変わってもペース乱れない
-追われても返事は返さない
-呼ばれりゃ今夜も帰らない
+場所が変わっても変わらないペース
+女に追われても返事はない
+仲間に呼ばれりゃまた夜に出たい
 
+[Bridge]
 ナンペイ
 ノーチャイム
 クソ長い階段
 
 山田
-南平
+八王子
 八王子のカシラ
 
 Peace Light
@@ -232,18 +243,26 @@ lil HYBRID
 調布に伝説
 南のドルフィン
 
-人間発電所　夜だけ稼働
-寝坊遅刻　既読で放置
-ストリートビュー　姿を残す
-呼ばれりゃ八王子　今夜も登場
+人間発電所
+夜だけ稼働
+寝坊
+遅刻
+既読は放置
+
+家の近く
+磯沼ファーム
+風向き次第で
+今日もくさい
 
 しーま
 全部まとめて
+しーま
 
+[Final Hook]
 しーま　またLINE返さない
 しーま　記念日覚えてない
 しーま　迎え行っても起きてない
-「今行く」って悪びれてない
+「今行く」って今日もまだ来ない
 
 しーま　触れたら火傷じゃない？
 しーま　恋なら自然消滅
@@ -251,14 +270,16 @@ lil HYBRID
 最寄りは山田　夜なら終わらない
 
 しーま
-南平から山田
+しーま
+みなみだいらから山田
+しーま
 しーま
 山田から八王子
 
 女は忘れる
 記念日忘れる
 LINEも忘れる
-待ち合わせ忘れる
+待ち合わせも忘れる
 
 夜ならドルフィン
 朝なら寝てる
@@ -266,7 +287,11 @@ LINEも忘れる
 それでもカシラ
 
 しーま
-今日も変わらない`
+今日も変わらない
+
+八王子
+山田
+しーま`
 
 type Answer =
   | {
@@ -299,6 +324,17 @@ type VoteCount = {
   voters: string[]
 }
 
+type PlayerSessionStats = {
+  playerId: string
+  playerName: string
+  totalWins: number
+  totalGames: number
+  werewolfWins: number
+  werewolfGames: number
+  citizenWins: number
+  citizenGames: number
+}
+
 type GameResult = {
   executedPlayer: {
     id: string
@@ -311,6 +347,7 @@ type GameResult = {
   }
   winner: Role
   voteCounts: VoteCount[]
+  playerStats: PlayerSessionStats[]
 }
 
 type ReconnectResponse = RoomResponse & {
@@ -385,6 +422,7 @@ function getSoundVolume() {
 const BGM_VOLUME_KEY = 'numberWerewolfBgmVolume'
 const BGM_TRACK_KEY = 'numberWerewolfBgmTrack'
 const DEFAULT_BGM_VOLUME = 35
+const DISCUSSION_SKIP_GUARD_MS = 1500
 
 function getBgmVolume() {
   const savedValue = localStorage.getItem(BGM_VOLUME_KEY)
@@ -440,22 +478,24 @@ function App() {
   const [error, setError] = useState('')
   const [soundVolume, setSoundVolume] = useState(() => getSoundVolume())
   const [bgmVolume, setBgmVolume] = useState(() => getBgmVolume())
-  const [selectedBgm, setSelectedBgm] = useState<BgmTrackId>(() =>
-    getBgmTrack(),
-  )
+  const [selectedBgm, setSelectedBgm] = useState<BgmTrackId>(() => getBgmTrack())
   const [playingBgm, setPlayingBgm] = useState<BgmTrackId | null>(null)
   const [showLyrics, setShowLyrics] = useState(false)
+  const [bgmPosition, setBgmPosition] = useState(0)
+  const [bgmDuration, setBgmDuration] = useState(0)
+  const [bgmSeekPreview, setBgmSeekPreview] = useState<number | null>(null)
   const bgmContextRef = useRef<AudioContext | null>(null)
   const bgmGainRef = useRef<GainNode | null>(null)
   const bgmBuffersRef = useRef<Map<BgmTrackId, AudioBuffer>>(new Map())
-  const bgmScheduledNodesRef = useRef<
-    Array<{ source: AudioBufferSourceNode; gain: GainNode }>
-  >([])
+  const bgmSourceRef = useRef<AudioBufferSourceNode | null>(null)
   const bgmCurrentTrackRef = useRef<BgmTrackId | null>(null)
   const bgmIsPlayingRef = useRef(false)
   const bgmShouldPlayRef = useRef(false)
-  const bgmStartRequestRef = useRef(0)
-  const bgmNowPlayingTimerRef = useRef<number | null>(null)
+  const bgmGenerationRef = useRef(0)
+  const bgmStartedAtRef = useRef(0)
+  const bgmStartOffsetRef = useRef(0)
+  const bgmPausedTrackRef = useRef<BgmTrackId | null>(null)
+  const bgmPausedOffsetRef = useRef(0)
 
   // プレイヤー・ルーム
   const [username, setUsername] = useState('')
@@ -498,6 +538,7 @@ function App() {
   const [skipCount, setSkipCount] = useState(0)
   const [skipRequiredCount, setSkipRequiredCount] = useState(0)
   const [hasSkipped, setHasSkipped] = useState(false)
+  const [discussionSkipReady, setDiscussionSkipReady] = useState(false)
   const [showSkipNotice, setShowSkipNotice] = useState(false)
 
   // 投票・結果
@@ -564,84 +605,208 @@ function App() {
       return
     }
 
-    const nextVolume = Math.min(1, Math.max(0, volume / 100))
+    const currentTrackId = bgmCurrentTrackRef.current ?? selectedBgm
+    const track = getSelectedBgm(currentTrackId)
+    const nextVolume = Math.min(
+      1,
+      Math.max(0, track.baseVolume * (volume / 100)),
+    )
 
-    gain.gain.cancelScheduledValues(gain.context.currentTime)
     gain.gain.setValueAtTime(nextVolume, gain.context.currentTime)
   }
 
-  function clearBgmNowPlayingTimer() {
-    if (bgmNowPlayingTimerRef.current === null) {
+  function stopCurrentBgmSource() {
+    const source = bgmSourceRef.current
+
+    if (!source) {
       return
     }
 
-    window.clearInterval(bgmNowPlayingTimerRef.current)
-    bgmNowPlayingTimerRef.current = null
-  }
+    source.onended = null
 
-  function stopScheduledBgmNodes() {
-    clearBgmNowPlayingTimer()
-
-    for (const { source, gain } of bgmScheduledNodesRef.current) {
-      source.onended = null
-
-      try {
-        source.stop()
-      } catch {
-        // すでに終了済み・停止済みでもゲームは続行する
-      }
-
-      try {
-        source.disconnect()
-      } catch {
-        // すでに切断済みでもゲームは続行する
-      }
-
-      try {
-        gain.disconnect()
-      } catch {
-        // すでに切断済みでもゲームは続行する
-      }
+    try {
+      source.stop()
+    } catch {
+      // すでに停止済みでもゲームは続行する
     }
 
-    bgmScheduledNodesRef.current = []
+    source.disconnect()
+    bgmSourceRef.current = null
   }
 
   function stopBgmAndReset() {
-    bgmStartRequestRef.current += 1
+    bgmGenerationRef.current += 1
+    bgmShouldPlayRef.current = false
+    bgmIsPlayingRef.current = false
+    bgmCurrentTrackRef.current = null
+    bgmStartedAtRef.current = 0
+    bgmStartOffsetRef.current = 0
+    bgmPausedTrackRef.current = null
+    bgmPausedOffsetRef.current = 0
+    setPlayingBgm(null)
+    setShowLyrics(false)
+    setBgmPosition(0)
+    setBgmDuration(0)
+    setBgmSeekPreview(null)
+    stopCurrentBgmSource()
+  }
+
+  function pauseBgmForGame() {
+    const context = bgmContextRef.current
+    const currentTrackId = bgmCurrentTrackRef.current
+    const source = bgmSourceRef.current
+
+    if (
+      context &&
+      currentTrackId &&
+      source &&
+      bgmIsPlayingRef.current
+    ) {
+      const audioBuffer = bgmBuffersRef.current.get(currentTrackId)
+      const elapsed = Math.max(0, context.currentTime - bgmStartedAtRef.current)
+      let pausedOffset = bgmStartOffsetRef.current + elapsed
+
+      if (audioBuffer && audioBuffer.duration > 0) {
+        pausedOffset = Math.min(
+          pausedOffset,
+          Math.max(0, audioBuffer.duration - 0.01),
+        )
+      }
+
+      bgmPausedTrackRef.current = currentTrackId
+      bgmPausedOffsetRef.current = Math.max(0, pausedOffset)
+      setBgmPosition(Math.max(0, pausedOffset))
+      setBgmDuration(audioBuffer?.duration ?? 0)
+      setBgmSeekPreview(null)
+    } else {
+      bgmPausedTrackRef.current = null
+      bgmPausedOffsetRef.current = 0
+    }
+
+    bgmGenerationRef.current += 1
     bgmShouldPlayRef.current = false
     bgmIsPlayingRef.current = false
     bgmCurrentTrackRef.current = null
     setPlayingBgm(null)
     setShowLyrics(false)
-    stopScheduledBgmNodes()
+    stopCurrentBgmSource()
   }
 
-  function getOrderedPlayableBgmTracks(startTrackId: BgmTrackId) {
+  function getNextBgmTrackId(currentTrackId: BgmTrackId) {
     if (PLAYABLE_BGM_TRACKS.length === 0) {
-      return []
+      return null
     }
 
-    const startIndex = PLAYABLE_BGM_TRACKS.findIndex(
-      (track) => track.id === startTrackId,
+    const currentIndex = PLAYABLE_BGM_TRACKS.findIndex(
+      (track) => track.id === currentTrackId,
     )
 
-    const normalizedStartIndex = startIndex === -1 ? 0 : startIndex
+    if (currentIndex === -1) {
+      return PLAYABLE_BGM_TRACKS[0].id
+    }
 
-    return [
-      ...PLAYABLE_BGM_TRACKS.slice(normalizedStartIndex),
-      ...PLAYABLE_BGM_TRACKS.slice(0, normalizedStartIndex),
-    ]
+    const nextIndex = (currentIndex + 1) % PLAYABLE_BGM_TRACKS.length
+    return PLAYABLE_BGM_TRACKS[nextIndex].id
   }
 
-  function setNowPlayingTrack(trackId: BgmTrackId | null) {
-    if (bgmCurrentTrackRef.current === trackId) {
+  async function playBgmTrack(
+    trackId: BgmTrackId,
+    generation: number,
+    offsetSeconds = 0,
+  ): Promise<void> {
+    if (!bgmShouldPlayRef.current || generation !== bgmGenerationRef.current) {
       return
     }
 
-    bgmCurrentTrackRef.current = trackId
-    setPlayingBgm(trackId)
-    setShowLyrics((current) => (trackId === 'SHIMA' ? current : false))
+    const track = getSelectedBgm(trackId)
+
+    if (!track.path) {
+      stopBgmAndReset()
+      return
+    }
+
+    try {
+      const context = getOrCreateBgmContext()
+
+      if (context.state !== 'running') {
+        await context.resume()
+      }
+
+      const audioBuffer = await loadBgmBuffer(trackId)
+
+      if (
+        !audioBuffer ||
+        !bgmShouldPlayRef.current ||
+        generation !== bgmGenerationRef.current
+      ) {
+        return
+      }
+
+      stopCurrentBgmSource()
+
+      const source = context.createBufferSource()
+      const gain = bgmGainRef.current
+
+      if (!gain) {
+        return
+      }
+
+      source.buffer = audioBuffer
+      source.connect(gain)
+
+      const safeOffset =
+        audioBuffer.duration > 0
+          ? Math.min(
+              Math.max(0, offsetSeconds),
+              Math.max(0, audioBuffer.duration - 0.01),
+            )
+          : 0
+
+      bgmSourceRef.current = source
+      bgmCurrentTrackRef.current = trackId
+      bgmIsPlayingRef.current = true
+      bgmStartedAtRef.current = context.currentTime
+      bgmStartOffsetRef.current = safeOffset
+      setPlayingBgm(trackId)
+      setBgmPosition(safeOffset)
+      setBgmDuration(audioBuffer.duration)
+      setBgmSeekPreview(null)
+      setShowLyrics((current) => (trackId === 'SHIMA' ? current : false))
+      updateBgmAudioVolume(getBgmVolume())
+
+      source.onended = () => {
+        if (
+          source !== bgmSourceRef.current ||
+          !bgmShouldPlayRef.current ||
+          generation !== bgmGenerationRef.current
+        ) {
+          return
+        }
+
+        bgmSourceRef.current = null
+        setBgmPosition(0)
+        setBgmSeekPreview(null)
+
+        const nextTrackId = getNextBgmTrackId(trackId)
+
+        if (!nextTrackId) {
+          bgmIsPlayingRef.current = false
+          bgmCurrentTrackRef.current = null
+          setPlayingBgm(null)
+          setShowLyrics(false)
+          return
+        }
+
+        void playBgmTrack(nextTrackId, generation, 0)
+      }
+
+      source.start(0, safeOffset)
+    } catch (error) {
+      console.warn('BGMの再生に失敗しました:', error)
+      bgmIsPlayingRef.current = false
+      setPlayingBgm(null)
+      setShowLyrics(false)
+    }
   }
 
   function startBgmFromBeginning(trackId = selectedBgm) {
@@ -652,213 +817,93 @@ function App() {
       return
     }
 
-    const orderedTracks = getOrderedPlayableBgmTracks(trackId)
+    stopCurrentBgmSource()
 
-    if (orderedTracks.length === 0) {
-      stopBgmAndReset()
+    bgmPausedTrackRef.current = null
+    bgmPausedOffsetRef.current = 0
+    setBgmPosition(0)
+    setBgmDuration(0)
+    setBgmSeekPreview(null)
+    bgmGenerationRef.current += 1
+    const generation = bgmGenerationRef.current
+
+    bgmShouldPlayRef.current = true
+    bgmCurrentTrackRef.current = trackId
+
+    void playBgmTrack(trackId, generation, 0)
+  }
+
+  function resumeBgmAfterGame() {
+    const pausedTrackId = bgmPausedTrackRef.current
+    const pausedOffset = bgmPausedOffsetRef.current
+
+    if (!pausedTrackId) {
+      startBgmFromBeginning()
       return
     }
 
-    bgmStartRequestRef.current += 1
-    const requestId = bgmStartRequestRef.current
+    const track = getSelectedBgm(pausedTrackId)
+
+    if (!track.path) {
+      startBgmFromBeginning()
+      return
+    }
+
+    stopCurrentBgmSource()
+
+    bgmGenerationRef.current += 1
+    const generation = bgmGenerationRef.current
 
     bgmShouldPlayRef.current = true
-    stopScheduledBgmNodes()
+    bgmCurrentTrackRef.current = pausedTrackId
+    bgmPausedTrackRef.current = null
+    bgmPausedOffsetRef.current = 0
 
-    const context = getOrCreateBgmContext()
+    void playBgmTrack(pausedTrackId, generation, pausedOffset)
+  }
 
-    // この関数は「ルームを作る / 参加する」などのユーザー操作からも呼ばれる。
-    // その操作中に AudioContext を起こしておくことで、その後の曲境界では
-    // resume() や play() を呼び直さずに済む。
-    const resumePromise =
-      context.state === 'running' ? Promise.resolve() : context.resume()
+  function seekCurrentBgm(positionSeconds: number) {
+    const trackId = bgmCurrentTrackRef.current
+    const audioBuffer = trackId ? bgmBuffersRef.current.get(trackId) : null
 
-    void (async () => {
-      try {
-        const loadedTracks = await Promise.all(
-          orderedTracks.map(async (item) => {
-            const buffer = await loadBgmBuffer(item.id)
+    if (
+      !trackId ||
+      !audioBuffer ||
+      !bgmIsPlayingRef.current ||
+      !bgmShouldPlayRef.current
+    ) {
+      setBgmSeekPreview(null)
+      return
+    }
 
-            if (!buffer) {
-              throw new Error(`BGMバッファを取得できませんでした: ${item.id}`)
-            }
+    const safePosition = Math.min(
+      Math.max(0, positionSeconds),
+      Math.max(0, audioBuffer.duration - 0.01),
+    )
 
-            return {
-              track: item,
-              buffer,
-            }
-          }),
-        )
+    stopCurrentBgmSource()
 
-        await resumePromise
+    bgmGenerationRef.current += 1
+    const generation = bgmGenerationRef.current
 
-        if (
-          !bgmShouldPlayRef.current ||
-          requestId !== bgmStartRequestRef.current
-        ) {
-          return
-        }
+    bgmShouldPlayRef.current = true
+    bgmCurrentTrackRef.current = trackId
+    bgmPausedTrackRef.current = null
+    bgmPausedOffsetRef.current = 0
+    setBgmPosition(safePosition)
+    setBgmDuration(audioBuffer.duration)
+    setBgmSeekPreview(null)
 
-        const masterGain = bgmGainRef.current
+    void playBgmTrack(trackId, generation, safePosition)
+  }
 
-        if (!masterGain) {
-          return
-        }
+  function commitBgmSeek(value: number) {
+    if (!Number.isFinite(value)) {
+      setBgmSeekPreview(null)
+      return
+    }
 
-        // マスター音量はプレイリスト全体で1個だけ。
-        // 曲が変わってもGainNodeを作り直さないので、0%ならずっと0%のまま。
-        updateBgmAudioVolume(getBgmVolume())
-
-        const segments: Array<{
-          id: BgmTrackId
-          start: number
-          end: number
-        }> = []
-
-        let cycleDuration = 0
-
-        for (const { track: loadedTrack, buffer } of loadedTracks) {
-          const start = cycleDuration
-          const end = start + buffer.duration
-
-          segments.push({
-            id: loadedTrack.id,
-            start,
-            end,
-          })
-
-          cycleDuration = end
-        }
-
-        if (cycleDuration <= 0) {
-          return
-        }
-
-        // 曲の終端で次曲を再生開始するのではなく、先の曲まで最初に予約しておく。
-        // これでブラウザの自動再生制限に曲境界で引っかからない。
-        const playlistStartTime = context.currentTime + 0.08
-        const scheduleDurationSeconds = 8 * 60 * 60
-        const scheduledNodes: Array<{
-          source: AudioBufferSourceNode
-          gain: GainNode
-        }> = []
-
-        let cycleOffset = 0
-
-        while (cycleOffset < scheduleDurationSeconds) {
-          for (const { track: loadedTrack, buffer } of loadedTracks) {
-            const source = context.createBufferSource()
-            const trackGain = context.createGain()
-
-            source.buffer = buffer
-            trackGain.gain.value = loadedTrack.baseVolume
-
-            source.connect(trackGain)
-            trackGain.connect(masterGain)
-
-            source.onended = () => {
-              try {
-                source.disconnect()
-              } catch {
-                // すでに切断済みでも問題なし
-              }
-
-              try {
-                trackGain.disconnect()
-              } catch {
-                // すでに切断済みでも問題なし
-              }
-            }
-
-            source.start(playlistStartTime + cycleOffset)
-
-            scheduledNodes.push({
-              source,
-              gain: trackGain,
-            })
-
-            cycleOffset += buffer.duration
-          }
-        }
-
-        if (
-          !bgmShouldPlayRef.current ||
-          requestId !== bgmStartRequestRef.current
-        ) {
-          for (const { source, gain } of scheduledNodes) {
-            source.onended = null
-
-            try {
-              source.stop()
-            } catch {
-              // すでに終了していても問題なし
-            }
-
-            try {
-              source.disconnect()
-              gain.disconnect()
-            } catch {
-              // すでに切断済みでも問題なし
-            }
-          }
-
-          return
-        }
-
-        bgmScheduledNodesRef.current = scheduledNodes
-        bgmIsPlayingRef.current = true
-        setNowPlayingTrack(orderedTracks[0].id)
-
-        clearBgmNowPlayingTimer()
-
-        const updateNowPlaying = () => {
-          if (
-            !bgmShouldPlayRef.current ||
-            requestId !== bgmStartRequestRef.current
-          ) {
-            return
-          }
-
-          const elapsed = context.currentTime - playlistStartTime
-
-          if (elapsed < 0) {
-            return
-          }
-
-          const positionInCycle =
-            ((elapsed % cycleDuration) + cycleDuration) % cycleDuration
-
-          const segment =
-            segments.find(
-              (item, index) =>
-                positionInCycle >= item.start &&
-                (positionInCycle < item.end ||
-                  (index === segments.length - 1 &&
-                    positionInCycle <= item.end)),
-            ) ?? segments[0]
-
-          setNowPlayingTrack(segment.id)
-        }
-
-        updateNowPlaying()
-
-        bgmNowPlayingTimerRef.current = window.setInterval(
-          updateNowPlaying,
-          250,
-        )
-      } catch (error) {
-        console.warn('BGMの再生に失敗しました:', error)
-
-        if (requestId !== bgmStartRequestRef.current) {
-          return
-        }
-
-        bgmIsPlayingRef.current = false
-        bgmCurrentTrackRef.current = null
-        setPlayingBgm(null)
-        setShowLyrics(false)
-      }
-    })()
+    seekCurrentBgm(value)
   }
 
   // Socket.IOイベント
@@ -934,7 +979,7 @@ function App() {
       setAnsweredCount(0)
       setGameResult(null)
       setError('')
-      stopBgmAndReset()
+      pauseBgmForGame()
       playSound('/sounds/start.mp3', 0.69)
       setScreen('answer')
     }
@@ -969,6 +1014,7 @@ function App() {
       setSkipCount(data.skipCount)
       setSkipRequiredCount(data.skipRequiredCount)
       setHasSkipped(false)
+      setDiscussionSkipReady(false)
       playSound('/sounds/reveal.mp3', 0.58)
       setScreen('discussion')
     }
@@ -1366,14 +1412,53 @@ function App() {
     }
   }, [screen, resultStage, gameResult])
 
-  // 結果画面に入ったら、選択中のBGMを頭から再生
+  // 結果画面に入ったら、ゲーム開始時に止めた位置からBGMを再開
   useEffect(() => {
     if (screen !== 'result') {
       return
     }
 
-    startBgmFromBeginning()
+    resumeBgmAfterGame()
   }, [screen])
+
+  // BGMの再生位置をシークバーへ反映
+  useEffect(() => {
+    if (!playingBgm) {
+      return
+    }
+
+    function updateBgmPosition() {
+      const context = bgmContextRef.current
+      const trackId = bgmCurrentTrackRef.current
+
+      if (!context || !trackId || !bgmIsPlayingRef.current) {
+        return
+      }
+
+      const audioBuffer = bgmBuffersRef.current.get(trackId)
+
+      if (!audioBuffer) {
+        return
+      }
+
+      const elapsed = Math.max(0, context.currentTime - bgmStartedAtRef.current)
+      const currentPosition = Math.min(
+        audioBuffer.duration,
+        bgmStartOffsetRef.current + elapsed,
+      )
+
+      setBgmPosition(currentPosition)
+      setBgmDuration(audioBuffer.duration)
+    }
+
+    updateBgmPosition()
+
+    const timer = window.setInterval(updateBgmPosition, 250)
+
+    return () => {
+      window.clearInterval(timer)
+    }
+  }, [playingBgm])
 
   // BGM音量をリアルタイム反映
   useEffect(() => {
@@ -1383,10 +1468,30 @@ function App() {
   // 画面を閉じたときにBGMを停止
   useEffect(() => {
     return () => {
-      stopScheduledBgmNodes()
+      stopCurrentBgmSource()
       void bgmContextRef.current?.close()
     }
   }, [])
+
+  // 話し合い開始直後の誤操作防止
+  useEffect(() => {
+    if (screen !== 'discussion') {
+      setDiscussionSkipReady(false)
+      return
+    }
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+
+    const timer = window.setTimeout(() => {
+      setDiscussionSkipReady(true)
+    }, DISCUSSION_SKIP_GUARD_MS)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [screen])
 
   // 回答タイマー
   useEffect(() => {
@@ -1496,14 +1601,6 @@ function App() {
     localStorage.setItem(BGM_VOLUME_KEY, String(nextVolume))
 
     updateBgmAudioVolume(nextVolume)
-
-    // 端末側でAudioContextが一時停止していた場合も、
-    // スライダー操作そのものを使って安全に再開する。
-    if (nextVolume > 0 && bgmContextRef.current?.state === 'suspended') {
-      void bgmContextRef.current.resume().catch(() => {
-        // 再開できなくてもゲーム進行には影響させない
-      })
-    }
   }
 
   function handleBgmTrackChange(value: string) {
@@ -1731,6 +1828,10 @@ function App() {
   }
 
   function handleToggleDiscussionSkip() {
+    if (!discussionSkipReady) {
+      return
+    }
+
     setError('')
 
     socket.emit(
@@ -2016,6 +2117,22 @@ function App() {
     )}`
   }
 
+  function formatBgmTime(seconds: number) {
+    const safeSeconds = Math.max(0, Math.floor(seconds))
+    const minutes = Math.floor(safeSeconds / 60)
+    const secs = safeSeconds % 60
+
+    return `${minutes}:${String(secs).padStart(2, '0')}`
+  }
+
+  function formatWinRate(wins: number, games: number) {
+    if (games <= 0) {
+      return '—'
+    }
+
+    return `${((wins / games) * 100).toFixed(1)}%`
+  }
+
   return (
     <main className="app">
       <div className="audio-control-panel" aria-label="音設定">
@@ -2094,6 +2211,49 @@ function App() {
             </button>
           )}
         </div>
+
+        <div className="bgm-seek-row">
+          <span className="bgm-seek-time">
+            {formatBgmTime(bgmSeekPreview ?? bgmPosition)}
+          </span>
+          <input
+            className="bgm-seek-slider"
+            type="range"
+            min="0"
+            max={Math.max(0, bgmDuration)}
+            step="1"
+            value={Math.min(
+              bgmSeekPreview ?? bgmPosition,
+              Math.max(0, bgmDuration),
+            )}
+            disabled={!playingBgm || bgmDuration <= 0}
+            onChange={(event) =>
+              setBgmSeekPreview(Number(event.target.value))
+            }
+            onPointerUp={(event) =>
+              commitBgmSeek(Number(event.currentTarget.value))
+            }
+            onKeyUp={(event) => {
+              if (
+                ['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(
+                  event.key,
+                )
+              ) {
+                commitBgmSeek(Number(event.currentTarget.value))
+              }
+            }}
+            onBlur={(event) => {
+              if (bgmSeekPreview !== null) {
+                commitBgmSeek(Number(event.currentTarget.value))
+              }
+            }}
+            aria-label="BGMの再生位置"
+            aria-valuetext={`${formatBgmTime(
+              bgmSeekPreview ?? bgmPosition,
+            )} / ${formatBgmTime(bgmDuration)}`}
+          />
+          <span className="bgm-seek-time">{formatBgmTime(bgmDuration)}</span>
+        </div>
       </div>
 
       {showLyrics && playingBgm === 'SHIMA' && (
@@ -2129,9 +2289,16 @@ function App() {
             <p className="subtitle">数字で答えて、人狼を見つけろ。</p>
 
             <div className="menu">
-              <button onClick={handleEnterCreateScreen}>ルームを作る</button>
+              <button
+                onClick={handleEnterCreateScreen}
+              >
+                ルームを作る
+              </button>
 
-              <button className="secondary" onClick={handleEnterJoinScreen}>
+              <button
+                className="secondary"
+                onClick={handleEnterJoinScreen}
+              >
                 ルームに参加する
               </button>
 
@@ -2204,7 +2371,10 @@ function App() {
               </li>
             </ol>
 
-            <button className="back" onClick={handleBackToHome}>
+            <button
+              className="back"
+              onClick={handleBackToHome}
+            >
               戻る
             </button>
           </div>
@@ -2228,7 +2398,10 @@ function App() {
 
             <button onClick={handleCreateRoom}>ルーム作成</button>
 
-            <button className="back" onClick={handleBackToHome}>
+            <button
+              className="back"
+              onClick={handleBackToHome}
+            >
               戻る
             </button>
           </div>
@@ -2265,7 +2438,10 @@ function App() {
 
             <button onClick={handleJoinRoom}>参加する</button>
 
-            <button className="back" onClick={handleBackToHome}>
+            <button
+              className="back"
+              onClick={handleBackToHome}
+            >
               戻る
             </button>
           </div>
@@ -2757,8 +2933,10 @@ function App() {
             </div>
 
             <button
+              type="button"
               className={`skip-button ${hasSkipped ? 'active' : ''}`}
               onClick={handleToggleDiscussionSkip}
+              disabled={!discussionSkipReady}
             >
               {hasSkipped ? 'スキップ取消' : 'スキップ'} {skipCount} /{' '}
               {skipRequiredCount}
@@ -2934,6 +3112,37 @@ function App() {
                   </>
                 )}
               </p>
+            </div>
+
+            <h3 className="session-stats-title">このルームの戦績</h3>
+
+            <div className="player-stats-grid">
+              {gameResult.playerStats.map((stats) => (
+                <div key={stats.playerId} className="player-stats-card">
+                  <div className="player-stats-header">
+                    <strong>{stats.playerName}</strong>
+                    <span>
+                      総合 {stats.totalWins}勝（{stats.totalGames}戦）
+                    </span>
+                  </div>
+
+                  <div className="player-stats-role-row">
+                    <span className="player-stats-role werewolf-text">人狼</span>
+                    <strong>
+                      {formatWinRate(stats.werewolfWins, stats.werewolfGames)}
+                    </strong>
+                    <span>{stats.werewolfGames}戦</span>
+                  </div>
+
+                  <div className="player-stats-role-row">
+                    <span className="player-stats-role citizen-text">市民</span>
+                    <strong>
+                      {formatWinRate(stats.citizenWins, stats.citizenGames)}
+                    </strong>
+                    <span>{stats.citizenGames}戦</span>
+                  </div>
+                </div>
+              ))}
             </div>
 
             <h3>投票結果</h3>
